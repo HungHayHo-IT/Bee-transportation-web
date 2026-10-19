@@ -1,0 +1,11 @@
+# Camera masters for the hero: 36MB of input to encode-hero.sh that the site
+# never serves. They stay in git — the encode is not reproducible without them —
+# but there is no reason to upload them on every deploy.
+*.orig.mp4
+
+# The pre-port static site, kept for comparison only.
+legacy/
+
+# Handoff specs.
+*-HANDOFF.md
+encode-hero.sh

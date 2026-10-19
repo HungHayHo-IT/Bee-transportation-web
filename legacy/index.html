@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BEE Transportation — Vận chuyển chuyên nghiệp, kết nối mọi nơi</title>
+<meta name="description" content="BEE Transportation Corporation — giải pháp logistics chuyên biệt cho hàng siêu trường, siêu trọng và hàng dự án tại Việt Nam và toàn cầu." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ============ PRELOADER ============ -->
+<div class="preloader" id="preloader">
+  <div class="preloader__inner">
+    <div class="preloader__logo">
+      <span class="hex"></span>
+      <span class="nav__brandtext">BEE<em>TRANSPORTATION</em></span>
+    </div>
+    <div class="preloader__bar"><i id="preloadFill"></i></div>
+    <div class="preloader__pct"><span id="preloadPct">0</span>%</div>
+    <div class="preloader__note">Đang tải trải nghiệm hình ảnh…</div>
+  </div>
+</div>
+
+<!-- ============ SCROLL PROGRESS ============ -->
+<div class="scrollbar-progress"><i id="pageProgress"></i></div>
+
+<!-- ============ HEADER ============ -->
+<header class="nav" id="nav">
+  <a class="nav__brand" href="#top">
+    <span class="hex"></span>
+    <span class="nav__brandtext">BEE<em>TRANSPORTATION</em></span>
+  </a>
+  <nav class="nav__links" id="navLinks">
+    <a href="#about">Giới thiệu</a>
+    <a href="#services">Dịch vụ</a>
+    <a href="#why">Thế mạnh</a>
+    <a href="#process">Quy trình</a>
+    <a href="#fleet">Thiết bị</a>
+    <a href="#contact">Liên hệ</a>
+  </nav>
+  <a class="btn btn--sm btn--primary nav__cta" href="#contact">Nhận báo giá</a>
+  <button class="nav__burger" id="navBurger" aria-label="Mở menu"><i></i><i></i><i></i></button>
+</header>
+
+<!-- ============ ROUTE NETWORK OVERLAY ============
+     Spans from the end of the hero to the bottom of the footer. Hidden until
+     the scroll head reaches it; geometry is generated in main.js. -->
+<div class="routes" id="routes" aria-hidden="true">
+  <svg id="routeSvg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"></svg>
+</div>
+
+<main id="top">
+
+<!-- ============ HERO : SCROLL-SCRUBBED VIDEO ============ -->
+<section class="hero" id="hero">
+  <div class="hero__sticky">
+
+    <!-- Layer 0 — K3c. Pure CSS (no image, no request); the video sits on top
+         of it and fades away over the last stretch of the scroll to leave this
+         as the hero's resting state. -->
+    <div class="hero-backdrop" aria-hidden="true"></div>
+
+    <div class="hero__stage">
+      <!-- One clip per element, in play order. main.js pairs these with
+           SOURCES by position, so the order here is the order on screen. -->
+      <video id="vidA" class="hero__video is-active" muted playsinline preload="auto" disablepictureinpicture></video>
+      <video id="vidB" class="hero__video" muted playsinline preload="auto" disablepictureinpicture></video>
+      <video id="vidC" class="hero__video" muted playsinline preload="auto" disablepictureinpicture></video>
+      <video id="vidD" class="hero__video" muted playsinline preload="auto" disablepictureinpicture></video>
+      <div class="hero__vignette"></div>
+    </div>
+
+    <!-- Text overlays driven by scroll progress.
+         data-from / data-to are fractions of the hero's whole scroll, and the
+         17s of footage is spent by 0.92 (STAGE_FADE_FROM in main.js) — so the
+         clip boundaries land at 0.270 (v1|v2), 0.486 (v2|v3), 0.704 (v3|v4)
+         and 0.92 (last frame). Past that the video dissolves into the K3c
+         backdrop, which is why the closing caption runs on to the end.
+         Re-check these if a clip is re-cut or the fade band moves. -->
+    <div class="hero__overlays" id="heroOverlays">
+
+      <!-- v1 — xe tiến vào kho -->
+      <div class="cap" data-from="-0.06" data-to="0.15">
+        <div class="cap__eyebrow"><i></i>Est. 08.11.2023 — Việt Nam &amp; Toàn cầu</div>
+        <h1 class="cap__title">BEE <span>TRANSPORTATION</span></h1>
+        <p class="cap__sub">Our best is your best</p>
+      </div>
+
+      <!-- v1 → v2 — xe dừng, cửa container bắt đầu mở -->
+      <div class="cap" data-from="0.19" data-to="0.33">
+        <div class="cap__eyebrow"><i></i>Chuyên nghiệp — Tận tâm</div>
+        <h2 class="cap__title">Vận Chuyển <span>Chuyên Nghiệp</span></h2>
+        <p class="cap__sub">Kết nối mọi nơi — Giao nhận door-to-door trên toàn quốc</p>
+      </div>
+
+      <!-- v2 — khoang hàng mở hoàn toàn -->
+      <div class="cap" data-from="0.37" data-to="0.48">
+        <div class="cap__eyebrow"><i></i>Project Cargo</div>
+        <h2 class="cap__title">Hàng <span>Siêu Trường</span> Siêu Trọng</h2>
+        <p class="cap__sub">Khảo sát tuyến — Giấy phép lưu hành — Xe dẫn đoàn</p>
+      </div>
+
+      <!-- v3 — vật chất tan thành wireframe -->
+      <div class="cap" data-from="0.52" data-to="0.68">
+        <div class="cap__eyebrow"><i></i>Multimodal</div>
+        <h2 class="cap__title">Đường Bộ <span>·</span> Đường Biển <span>·</span> Đa Phương Thức</h2>
+        <p class="cap__sub">Tối ưu chi phí — Kiểm soát hành trình theo thời gian thực</p>
+      </div>
+
+      <!-- v4 — luồng sáng hội tụ, trạng thái nghỉ -->
+      <div class="cap" data-from="0.73" data-to="1.06">
+        <div class="cap__eyebrow"><i></i>Sẵn sàng đồng hành</div>
+        <h2 class="cap__title">Giải Pháp <span>Trọn Gói</span></h2>
+        <p class="cap__sub">Tiếp tục cuộn để khám phá năng lực của chúng tôi</p>
+      </div>
+
+    </div>
+
+    <!-- HUD -->
+    <div class="hero__hud">
+      <div class="hud__chapters">
+        <span class="hud__chapter is-on" data-ch="0">V1 · Hành trình</span>
+        <span class="hud__chapter" data-ch="1">V2 · Khoang hàng</span>
+        <span class="hud__chapter" data-ch="2">V3 · Số hoá</span>
+        <span class="hud__chapter" data-ch="3">V4 · Kết nối</span>
+      </div>
+      <div class="hud__track"><i id="heroProgress"></i></div>
+    </div>
+
+    <div class="hero__hint" id="heroHint">
+      <span>Cuộn để xem</span>
+      <div class="mouse"><i></i></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ MARQUEE ============ -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee__track">
+    <span>Domestic Transportation ✦ Project Cargo ✦ Multimodal Road &amp; Sea ✦ Stevedoring ✦ Crating &amp; Packing ✦ Cross-Border ✦ Customs Clearance ✦ Equipment Leasing ✦ Maritime Brokerage ✦&nbsp;</span>
+    <span>Domestic Transportation ✦ Project Cargo ✦ Multimodal Road &amp; Sea ✦ Stevedoring ✦ Crating &amp; Packing ✦ Cross-Border ✦ Customs Clearance ✦ Equipment Leasing ✦ Maritime Brokerage ✦&nbsp;</span>
+  </div>
+</div>
+
+<!-- ============ ABOUT ============ -->
+<section class="section about" id="about">
+  <div class="wrap about__grid">
+    <div class="reveal">
+      <div class="eyebrow"><i></i>Về chúng tôi</div>
+      <h2 class="h2">Giải pháp logistics <span class="hl">chuyên biệt</span> cho hàng dự án</h2>
+      <p class="lead">
+        BEE TRANSPORTATION Corporation được thành lập ngày <strong>08/11/2023</strong>, chuyên cung cấp
+        các giải pháp và dịch vụ logistics chuyên biệt cho việc <strong>vận chuyển, xếp dỡ và di dời
+        hàng siêu trường, siêu trọng, hàng dự án</strong> tại Việt Nam và trên toàn thế giới.
+      </p>
+      <p class="body">
+        Chúng tôi cam kết mang đến dịch vụ <strong>kịp thời, an toàn, hiệu quả và tối ưu chi phí</strong>
+        cho các khách hàng công nghiệp và thương mại. Với đội ngũ giàu kinh nghiệm cùng mạng lưới đối tác
+        rộng khắp, mỗi lô hàng đều được hoạch định riêng theo đặc thù hàng hoá và tuyến đường.
+      </p>
+      <div class="about__cta">
+        <a class="btn btn--primary" href="#services">Xem dịch vụ</a>
+        <a class="btn btn--ghost" href="#contact">Liên hệ tư vấn</a>
+      </div>
+    </div>
+
+    <div class="stats reveal">
+      <!-- NOTE: các con số dưới đây là placeholder — thay bằng số liệu thật của công ty -->
+      <div class="stat"><b class="count" data-to="9">0</b><span>Nhóm dịch vụ cốt lõi</span></div>
+      <div class="stat"><b class="count" data-to="2">0</b><span>Văn phòng: HCM &amp; Đà Nẵng</span></div>
+      <div class="stat"><b class="count" data-to="63">0</b><span>Tỉnh thành phủ sóng</span></div>
+      <div class="stat"><b class="count" data-to="24" data-suffix="/7">0</b><span>Hỗ trợ vận hành</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SERVICES ============ -->
+<section class="section services" id="services">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow"><i></i>Dịch vụ</div>
+      <h2 class="h2">Chuỗi dịch vụ <span class="hl">trọn gói</span> từ A đến Z</h2>
+      <p class="lead lead--center">Từ tư vấn phương án đến thông quan và giao hàng tận chân công trình.</p>
+    </div>
+
+    <div class="cards">
+      <article class="card reveal">
+        <div class="card__no">01</div>
+        <h3>Tư vấn giải pháp vận chuyển</h3>
+        <p>Hoạch định phương án tối ưu, tư vấn hàng hoá đặc thù và lựa chọn phương thức vận chuyển phù hợp nhất.</p>
+      </article>
+      <article class="card reveal">
+        <div class="card__no">02</div>
+        <h3>Vận chuyển nội địa</h3>
+        <p>Giao nhận door-to-door, xử lý hàng FCL/LCL, theo dõi hành trình theo thời gian thực trên toàn quốc.</p>
+      </article>
+      <article class="card reveal">
+        <div class="card__no">03</div>
+        <h3>Vận tải đa phương thức (Bộ / Biển)</h3>
+        <p>Kết hợp linh hoạt các phương thức, gom hàng tối ưu chi phí và giám sát toàn tuyến hành trình.</p>
+      </article>
+      <article class="card reveal card--hero">
+        <div class="card__no">04</div>
+        <h3>FCL/LCL, hàng dự án &amp; siêu trường siêu trọng</h3>
+        <p>Khảo sát tuyến, lập phương án nâng hạ, xin giấy phép lưu hành, bố trí xe dẫn đoàn và hộ tống.</p>
+      </article>
+      <article class="card reveal">
+        <div class="card__no">05</div>
+        <h3>Xếp dỡ, di dời &amp; nâng hạ thiết bị</h3>
+        <p>Bốc xếp chuyên nghiệp, giám sát an toàn và hỗ trợ toàn diện tại hiện trường.</p>
+      </article>
+      <article class="card reveal">
+        <div class="card__no">06</div>
+        <h3>Đóng/rút hàng, đóng kiện &amp; đóng gói</h3>
+        <p>Đóng thùng gỗ, hút chân không, đai kiện và thiết kế bao bì theo yêu cầu riêng.</p>
+      </article>
+      <article class="card reveal">
+        <div class="card__no">07</div>
+        <h3>Hàng quá cảnh &amp; xuyên biên giới</h3>
+        <p>Vận chuyển qua biên giới, hỗ trợ giấy phép và thủ tục tại các cửa khẩu.</p>
+      </article>
+      <article class="card reveal">
+        <div class="card__no">08</div>
+        <h3>Cho thuê thiết bị</h3>
+        <p>Xe đầu kéo container, xe nâng, cẩu — thuê theo giờ, theo chuyến hoặc theo tháng.</p>
+      </article>
+      <article class="card reveal">
+        <div class="card__no">09</div>
+        <h3>Khai báo hải quan &amp; môi giới hàng hải</h3>
+        <p>Thủ tục xuất nhập khẩu trọn gói và dịch vụ môi giới tàu, thuê tàu chuyến.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY ============ -->
+<section class="section why" id="why">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow"><i></i>Thế mạnh</div>
+      <h2 class="h2">Vì sao khách hàng chọn <span class="hl">BEE</span></h2>
+    </div>
+    <div class="why__grid">
+      <div class="why__item reveal"><b>An toàn tuyệt đối</b><p>Quy trình giám sát an toàn ở mọi khâu nâng hạ, chằng buộc và di chuyển hàng nặng.</p></div>
+      <div class="why__item reveal"><b>Đúng tiến độ</b><p>Kế hoạch tuyến chi tiết, dự phòng rủi ro và cập nhật trạng thái liên tục cho chủ hàng.</p></div>
+      <div class="why__item reveal"><b>Tối ưu chi phí</b><p>Kết hợp đa phương thức và gom hàng thông minh để giảm giá thành trên mỗi tấn-km.</p></div>
+      <div class="why__item reveal"><b>Pháp lý đầy đủ</b><p>Hỗ trợ trọn gói giấy phép lưu hành, thủ tục hải quan và quá cảnh xuyên biên giới.</p></div>
+      <div class="why__item reveal"><b>Đội ngũ chuyên trách</b><p>Một đầu mối phụ trách xuyên suốt dự án, phản hồi nhanh 24/7.</p></div>
+      <div class="why__item reveal"><b>Phủ sóng toàn quốc</b><p>Văn phòng tại TP. Hồ Chí Minh và Đà Nẵng, mạng lưới đối tác trong nước và quốc tế.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROCESS ============ -->
+<section class="section process" id="process">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow"><i></i>Quy trình</div>
+      <h2 class="h2">4 bước triển khai <span class="hl">rõ ràng</span></h2>
+    </div>
+    <ol class="steps">
+      <li class="step reveal"><span class="step__n">01</span><b>Tiếp nhận &amp; khảo sát</b><p>Ghi nhận thông số hàng hoá, điểm đi — điểm đến và khảo sát tuyến thực địa.</p></li>
+      <li class="step reveal"><span class="step__n">02</span><b>Lập phương án &amp; báo giá</b><p>Đề xuất phương thức, thiết bị, nhân lực kèm bảng giá minh bạch.</p></li>
+      <li class="step reveal"><span class="step__n">03</span><b>Thực hiện &amp; giám sát</b><p>Triển khai theo kế hoạch, giám sát an toàn và cập nhật hành trình liên tục.</p></li>
+      <li class="step reveal"><span class="step__n">04</span><b>Bàn giao &amp; nghiệm thu</b><p>Giao hàng tận nơi, nghiệm thu hiện trạng và hoàn tất chứng từ.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ FLEET ============ -->
+<section class="section fleet" id="fleet">
+  <div class="wrap fleet__grid">
+    <div class="reveal">
+      <div class="eyebrow"><i></i>Năng lực thiết bị</div>
+      <h2 class="h2">Thiết bị <span class="hl">sẵn sàng</span> cho mọi loại hàng</h2>
+      <p class="body">Cho thuê linh hoạt theo giờ, theo chuyến hoặc theo tháng — kèm đội ngũ vận hành có chứng chỉ.</p>
+      <a class="btn btn--primary" href="#contact">Hỏi thuê thiết bị</a>
+    </div>
+    <ul class="fleet__list reveal">
+      <li><b>Xe đầu kéo &amp; rơ-moóc container</b><span>20ft · 40ft · 45ft</span></li>
+      <li><b>Rơ-moóc sàn thấp / lùn</b><span>Hàng quá khổ, quá tải</span></li>
+      <li><b>Xe nâng</b><span>2.5 – 25 tấn</span></li>
+      <li><b>Cẩu bánh lốp / bánh xích</b><span>Theo yêu cầu dự án</span></li>
+      <li><b>Xe dẫn đoàn &amp; hộ tống</b><span>Tuyến siêu trường siêu trọng</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ CTA BAND ============ -->
+<section class="cta-band">
+  <div class="wrap cta-band__inner reveal">
+    <h2>Bạn có lô hàng cần vận chuyển?</h2>
+    <p>Gửi thông số hàng hoá — chúng tôi phản hồi phương án và báo giá trong vòng 24 giờ.</p>
+    <a class="btn btn--primary btn--lg" href="#contact">Nhận báo giá miễn phí</a>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="section contact" id="contact">
+  <div class="wrap contact__grid">
+    <div class="reveal">
+      <div class="eyebrow"><i></i>Liên hệ</div>
+      <h2 class="h2">Nói cho chúng tôi biết <span class="hl">lô hàng của bạn</span></h2>
+
+      <div class="info">
+        <div class="info__row">
+          <span class="info__label">Trụ sở chính</span>
+          <p>TTC Tower, 253 Hoàng Văn Thụ, Phường Tân Sơn Hoà, TP. Hồ Chí Minh, Việt Nam</p>
+        </div>
+        <div class="info__row">
+          <span class="info__label">Chi nhánh</span>
+          <p>386 Xô Viết Nghệ Tĩnh, Phường Khuê Trung, Quận Cẩm Lệ, TP. Đà Nẵng, Việt Nam</p>
+        </div>
+        <div class="info__row">
+          <span class="info__label">Hotline</span>
+          <p>
+            <a href="tel:+84938339112">(+84) 938 339 112</a> — Mr. Richard<br />
+            <a href="tel:+84886440449">(+84) 886 440 449</a> — Mr. Tiger
+          </p>
+        </div>
+        <div class="info__row">
+          <span class="info__label">Email</span>
+          <p><a href="mailto:info@beetransportation.vn">info@beetransportation.vn</a></p>
+        </div>
+      </div>
+    </div>
+
+    <form class="form reveal" id="quoteForm" novalidate>
+      <div class="form__row">
+        <label>Họ và tên <input type="text" name="name" required placeholder="Nguyễn Văn A" /></label>
+        <label>Số điện thoại <input type="tel" name="phone" required placeholder="09xx xxx xxx" /></label>
+      </div>
+      <label>Email <input type="email" name="email" placeholder="ban@congty.vn" /></label>
+      <label>Loại dịch vụ
+        <select name="service">
+          <option>Vận chuyển nội địa</option>
+          <option>Hàng dự án / siêu trường siêu trọng</option>
+          <option>Đa phương thức (bộ / biển)</option>
+          <option>Xếp dỡ, nâng hạ, di dời</option>
+          <option>Đóng gói, đóng kiện</option>
+          <option>Quá cảnh / xuyên biên giới</option>
+          <option>Cho thuê thiết bị</option>
+          <option>Khai báo hải quan</option>
+        </select>
+      </label>
+      <label>Thông tin hàng hoá <textarea name="message" rows="4" placeholder="Kích thước, trọng lượng, điểm đi — điểm đến, thời gian dự kiến…"></textarea></label>
+      <button class="btn btn--primary btn--block" type="submit">Gửi yêu cầu báo giá</button>
+      <p class="form__note" id="formNote" hidden>Cảm ơn bạn! Yêu cầu đã được ghi nhận (demo — chưa kết nối backend).</p>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap footer__grid">
+    <div>
+      <div class="nav__brand"><span class="hex"></span><span class="nav__brandtext">BEE<em>TRANSPORTATION</em></span></div>
+      <p class="footer__tag">Our best is your best.<br />Vận chuyển chuyên nghiệp — Kết nối mọi nơi.</p>
+    </div>
+    <div>
+      <h4>Dịch vụ</h4>
+      <a href="#services">Vận chuyển nội địa</a>
+      <a href="#services">Hàng dự án</a>
+      <a href="#services">Đa phương thức</a>
+      <a href="#services">Cho thuê thiết bị</a>
+    </div>
+    <div>
+      <h4>Công ty</h4>
+      <a href="#about">Giới thiệu</a>
+      <a href="#why">Thế mạnh</a>
+      <a href="#process">Quy trình</a>
+      <a href="#contact">Liên hệ</a>
+    </div>
+    <div>
+      <h4>Liên hệ</h4>
+      <a href="tel:+84938339112">(+84) 938 339 112</a>
+      <a href="mailto:info@beetransportation.vn">info@beetransportation.vn</a>
+      <span class="footer__addr">TTC Tower, 253 Hoàng Văn Thụ, TP. HCM</span>
+    </div>
+  </div>
+  <div class="footer__bar">
+    <span>© <span id="year"></span> BEE TRANSPORTATION Corporation. All rights reserved.</span>
+    <a href="#top">Về đầu trang ↑</a>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>

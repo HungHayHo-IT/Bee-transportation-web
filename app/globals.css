@@ -1,0 +1,3590 @@
+/* ==========================================================================
+   BEE TRANSPORTATION — global stylesheet
+   Hero: a one-screen video chain (v1 → v4) run by the wheel, over the K3c
+   CSS backdrop.
+
+   Plain CSS on purpose. It is hand-tuned around the hero — the backdrop's grid
+   is calibrated to the last frame of the footage — and nothing here benefits
+   from being expressed as utility classes. `--font-sans` is supplied by
+   next/font in app/[locale]/layout.tsx.
+   ========================================================================== */
+
+:root{
+  --bg:          #07090c;
+  --bg-2:        #0c1015;
+  --bg-3:        #11161d;
+  /* The ground the truck photographs carry in their own lower half. It is not
+     a choice: sample the bottom row of cta-truck.jpg or of the service hero and
+     it is exactly this. Any surface that meets one of those photographs has to
+     be this colour or the join shows as a band. The footer sits directly under
+     the CTA band, so it takes this rather than --bg-2. */
+  --ground:      #1c1c1c;
+  --line:        rgba(255,255,255,.10);
+  --line-2:      rgba(255,255,255,.06);
+  --txt:         #e9edf3;
+  --txt-2:       #9aa5b4;
+  /* A-01 — 4.52:1 trên --bg. Giá trị cũ #68717e chỉ đạt 4.04:1, trượt AA. */
+  --txt-3:       #6f7987;
+  /* Brand yellow — the bee */
+  --amber:       #ffc21a;
+  --amber-2:     #ffdb6b;
+  --amber-dk:    #b98600;
+  /* Brand orange — sampled from the container in the hero footage (hue 20°,
+     average #ce6430) and pushed to a saturation that carries as a UI accent */
+  --orange:      #f26a1b;
+  --orange-2:    #ff8f45;
+  --orange-dk:   #b8460a;
+  --orange-rgb:  242,106,27;
+  --radius:      16px;
+  --radius-sm:   10px;
+  --wrap:        1220px;
+  --ease:        cubic-bezier(.22,.61,.36,1);
+
+  /* K3c — the hero's resting backdrop, revealed as the video fades out.
+     Built entirely from gradients: no image, no request, sharp at any DPR.
+     The grid is meant to be almost invisible — if you notice it at a glance
+     it is too strong, so when in doubt take the fainter value. */
+  --hero-bg:        #08080A;                    /* near-black, faintly cool */
+  --hero-grid:      rgba(255,255,255,.032);     /* grid lines */
+  --hero-dot:       rgba(255,255,255,.075);     /* dots at the intersections */
+  --hero-bloom-a:   rgba(217,83,30,.10);        /* brand orange #D9531E */
+  --hero-bloom-b:   rgba(255,182,61,.055);      /* amber */
+  --hero-cell:      80px;
+  --hero-dot-size:  1.5px;
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+
+html{
+  scroll-behavior:smooth;
+  -webkit-text-size-adjust:100%;
+}
+
+body{
+  margin:0;
+  position:relative;
+  background:var(--bg);
+  color:var(--txt);
+  font-family:var(--font-sans),system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:16px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  /* `clip`, not `hidden`: `hidden` turns <body> into a scroll container and
+     silently breaks the sticky hero. */
+  overflow-x:clip;
+}
+
+img,video{ display:block; max-width:100%; }
+a{ color:inherit; text-decoration:none; }
+button{ font:inherit; }
+
+.wrap{ width:min(100% - 40px,var(--wrap)); margin-inline:auto; }
+
+/* ---------- shared bits ---------- */
+.eyebrow{
+  display:inline-flex; align-items:center; gap:9px;
+  font-size:12px; font-weight:600; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--orange); margin-bottom:18px;
+}
+.eyebrow i{ width:22px; height:1px; background:var(--orange); display:block; opacity:.8; }
+
+.h2{
+  font-size:clamp(28px,4.4vw,50px);
+  line-height:1.14; font-weight:700; letter-spacing:-.02em;
+  margin:0 0 20px;
+}
+.hl{
+  background:linear-gradient(100deg,var(--orange),var(--amber));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.lead{ font-size:clamp(16px,1.6vw,19px); color:#c3cbd6; margin:0 0 18px; }
+.lead--center{ max-width:640px; margin-inline:auto; }
+.body{ color:var(--txt-2); margin:0 0 26px; }
+strong{ color:var(--txt); font-weight:600; }
+/* ...nhung `--txt` la #e9edf3, mau chu cua giao dien TOI. Ba mat sang cua site
+   tu dat muc rieng cho minh, nen tren do dong tren bien chu in dam thanh gan
+   trang tren nen gan trang — do duoc 1.05:1, tuc la mat han. Chinh sach quyen
+   rieng tu dung `**in dam**` o dau moi doan nen mat nguyen cau dan. */
+:is(.legal-doc,.blog,.slide-light) strong{ color:inherit; }
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  padding:14px 26px; border-radius:999px; border:1px solid transparent;
+  font-weight:600; font-size:15px; cursor:pointer;
+  transition:transform .25s var(--ease), background .25s, box-shadow .25s, border-color .25s, color .25s;
+}
+.btn--primary{
+  background:linear-gradient(100deg,var(--orange),var(--amber));
+  color:#1c0b00; box-shadow:0 8px 30px -10px rgba(var(--orange-rgb),.6);
+}
+.btn--primary:hover{ transform:translateY(-2px); box-shadow:0 14px 40px -12px rgba(var(--orange-rgb),.75); }
+.btn--sm{ padding:10px 20px; font-size:14px; }
+.btn--lg{ padding:17px 38px; font-size:16px; }
+.btn--block{ width:100%; }
+
+.section{ padding:clamp(72px,9vw,130px) 0; position:relative; z-index:1; }
+.sec-head{ text-align:center; margin-bottom:clamp(40px,5vw,66px); }
+
+/* ==========================================================================
+   PAGE SCROLL PROGRESS
+   ========================================================================== */
+.scrollbar-progress{
+  position:fixed; top:0; left:0; right:0; height:2px; z-index:120;
+  background:transparent; pointer-events:none;
+}
+.scrollbar-progress i{
+  display:block; height:100%; width:0%;
+  background:linear-gradient(90deg,var(--orange),var(--amber));
+}
+
+/* ==========================================================================
+   NAV
+   ========================================================================== */
+.nav{
+  position:fixed; top:0; left:0; right:0; z-index:110;
+  display:flex; align-items:center; gap:26px;
+  padding:16px clamp(20px,4vw,44px);
+  transition:background .4s var(--ease), backdrop-filter .4s, border-color .4s, padding .4s;
+  border-bottom:1px solid transparent;
+}
+/* Two grounds, and clear when it has neither — see components/layout/Nav.tsx
+   for which is on where. The bar takes the opposite tone to what is under it,
+   so it reads against the page rather than sinking into it. */
+.nav--dark,
+.nav--light{ padding-block:12px; }
+/* Kính mờ (16/10/2026): nền trong hơn hẳn, nội dung phía sau nhoè qua thay
+   vì bị một dải đặc che. Độ mờ đủ để chữ menu vẫn đọc được trên ảnh sáng. */
+.nav--dark{
+  background:rgba(12,14,18,.42);
+  -webkit-backdrop-filter:blur(18px) saturate(1.6);
+  backdrop-filter:blur(18px) saturate(1.6);
+  border-bottom-color:rgba(255,255,255,.08);
+}
+.nav--light{
+  --nav-ink:#16232e;
+
+  background:rgba(255,255,255,.52);
+  -webkit-backdrop-filter:blur(18px) saturate(1.6);
+  backdrop-filter:blur(18px) saturate(1.6);
+  border-bottom-color:rgba(22,35,46,.08);
+  color:var(--nav-ink);
+}
+.nav--light .nav__links a{ color:rgba(22,35,46,.66); }
+.nav--light .nav__links a:hover,
+.nav--light .nav__links a[aria-current]{ color:var(--nav-ink); }
+.nav--light .nav__burger{
+  background:rgba(22,35,46,.05); border-color:rgba(22,35,46,.14);
+}
+.nav--light .nav__burger i{ background:var(--nav-ink); }
+.nav__brand{ display:flex; align-items:center; gap:11px; margin-right:auto; }
+/* Ghim CHIỀU CAO, chiều rộng chạy theo tỷ lệ 2,12:1 của logo. Ghim chiều
+   rộng hoặc ép vuông là bóp méo nó. */
+.nav__logo{ width:auto; height:30px; flex:none; }
+/* Mực của logo theo nền thanh đang đứng. Mặc định — tức là lúc thanh trong
+   suốt nằm trên hero tối — dùng bản mực trắng; chỉ khi thanh chuyển sang nền
+   trắng (.nav--light) mới đổi sang bản mực đen.
+
+   Ẩn bằng display chứ không phải opacity: bản đang ẩn không được chiếm chỗ,
+   nếu không hai logo sẽ nằm cạnh nhau và đẩy menu sang phải. */
+.nav__logo--on-light{ display:none; }
+.nav--light .nav__logo--on-dark{ display:none; }
+.nav--light .nav__logo--on-light{ display:block; }
+.nav__links{ display:flex; gap:28px; }
+.nav__links a{
+  font-size:14.5px; color:var(--txt-2); font-weight:500; position:relative; padding:4px 0;
+  transition:color .25s;
+}
+.nav__links a::after{
+  content:''; position:absolute; left:0; bottom:0; height:1px; width:0;
+  background:var(--orange); transition:width .3s var(--ease);
+}
+.nav__links a:hover{ color:var(--txt); }
+.nav__links a:hover::after{ width:100%; }
+
+.nav__burger{
+  display:none; width:42px; height:42px; border-radius:10px;
+  background:rgba(255,255,255,.05); border:1px solid var(--line);
+  flex-direction:column; justify-content:center; align-items:center; gap:5px; cursor:pointer;
+}
+.nav__burger i{ width:17px; height:1.6px; background:var(--txt); transition:.3s var(--ease); }
+.nav.is-open .nav__burger i:nth-child(1){ transform:translateY(6.6px) rotate(45deg); }
+.nav.is-open .nav__burger i:nth-child(2){ opacity:0; }
+.nav.is-open .nav__burger i:nth-child(3){ transform:translateY(-6.6px) rotate(-45deg); }
+
+/* ==========================================================================
+   HERO — the film, one screen
+   ========================================================================== */
+/* One screen, like every slide after it. It used to be several — the footage
+   was scrubbed against the scroll and the height came from JS — which is what
+   made the page take seventy notches of the wheel to get past the top. The
+   film now plays itself once the clips are in; see lib/hero/engine.ts. */
+.hero{
+  position:relative;
+  height:100vh; height:100svh;
+}
+.hero__sticky{
+  position:sticky; top:0;
+  height:100vh; height:100svh;
+  overflow:hidden;
+  background:#000;
+}
+
+/* ---- K3c backdrop: layer 0, what the hero rests on once the video is gone ---
+   Three layers of gradient — blooms on the element, grid + dots on ::before,
+   vignette on ::after — so the grid can be tuned without touching the rest and
+   the vignette always sits on top of it. */
+.hero-backdrop{
+  position:absolute; inset:0; z-index:0;
+  background-color:var(--hero-bg);
+  /* Bloom placement follows the residual glow in the last frame of v4, so the
+     backdrop does not "jump" when the video fades out (measured on an 8x5
+     luminance map of that frame: light sits around x≈31%, x≈69%, and a
+     brighter patch up and to the right). */
+  background-image:
+    radial-gradient(circle 420px at 26% 34%, var(--hero-bloom-a), transparent 70%),
+    radial-gradient(circle 340px at 74% 64%, var(--hero-bloom-b), transparent 70%),
+    radial-gradient(circle 260px at 78% 12%, var(--hero-bloom-b), transparent 70%);
+}
+.hero-backdrop::before{
+  content:''; position:absolute; inset:0;
+  background-image:
+    /* dots at the intersections */
+    radial-gradient(circle at 50% 50%,
+      var(--hero-dot) 0 var(--hero-dot-size),
+      transparent calc(var(--hero-dot-size) + .5px)),
+    /* vertical lines */
+    linear-gradient(to right, var(--hero-grid) 1px, transparent 1px),
+    /* horizontal lines */
+    linear-gradient(to bottom, var(--hero-grid) 1px, transparent 1px);
+  background-size:
+    var(--hero-cell) var(--hero-cell),
+    var(--hero-cell) var(--hero-cell),
+    var(--hero-cell) var(--hero-cell);
+  /* the dot layer is offset half a cell so each dot lands on an intersection
+     rather than in the middle of a square */
+  background-position:
+    calc(var(--hero-cell) / -2) calc(var(--hero-cell) / -2),
+    0 0,
+    0 0;
+}
+.hero-backdrop::after{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(ellipse 90% 80% at 50% 45%,
+    transparent 0%, transparent 45%, rgba(0,0,0,.55) 100%);
+}
+
+/* Khung nghi: nam TREN nen CSS, DUOI video. Co may lam no hien dan dung quang
+   video mo di (xem STAGE_FADE_FROM ben engine.ts), nen hai lop giao nhau chu
+   khong de lo nen den o giua. */
+.hero-rest{
+  position:absolute; inset:0; z-index:0;
+  opacity:0;
+  transition:opacity .6s var(--ease);
+}
+.hero-rest__img,
+.hero-rest__video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+/* Ai da xin he thong bot chuyen dong thi khong dat mot clip lap vo tan sau
+   lung ho. Anh tinh o duoi van con, nen khung nghi khong trong. */
+@media (prefers-reduced-motion: reduce){ .hero-rest__video{ display:none; } }
+
+/* Da xem het phim roi: vao thang khung nghi. Khong tai clip nao, nen khong co
+   gi de mo dan — anh len ngay, chu cuoi cung dung yen o do, va nhung thu chi
+   co nghia khi phim dang chay thi bien mat. */
+.hero.is-rest .hero-rest{ opacity:1; transition:none; }
+.hero.is-rest .poster,
+.hero.is-rest .hero__stage,
+.hero.is-rest .hero__hint,
+.hero.is-rest .hud__track{ display:none; }
+.hero.is-rest .cap:last-child{ opacity:1; transform:none; filter:none; }
+/* Khong chay phim thi khong ai go `is-on` khoi chuong 01 — ban HTML phat di
+   luon danh dau chuong dau. O khung nghi phai la chuong CUOI sang len, neu
+   khong hai dau cham cung sang mot luc. */
+.hero.is-rest .hud__chapter.is-on:not(:last-child){ color:var(--txt-3); }
+.hero.is-rest .hud__chapter.is-on:not(:last-child)::before{ opacity:.35; box-shadow:none; }
+.hero.is-rest .hud__chapter:last-child{ color:var(--orange-2); }
+.hero.is-rest .hud__chapter:last-child::before{ opacity:1; box-shadow:0 0 0 4px rgba(var(--orange-rgb),.20); }
+
+.hero__stage{ position:absolute; inset:0; z-index:1; }
+.hero__video{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit:cover;
+  opacity:0;
+  transition:opacity .45s var(--ease);
+  will-change:opacity;
+  background:#000;
+}
+.hero__video.is-active{ opacity:1; }
+
+.hero__vignette{
+  position:absolute; inset:0; pointer-events:none;
+  background:
+    /* soft scrim right behind the captions so text stays legible on bright footage */
+    radial-gradient(58% 46% at 50% 50%, rgba(3,5,8,.62) 0%, rgba(3,5,8,.30) 55%, transparent 78%),
+    radial-gradient(120% 85% at 50% 42%, transparent 30%, rgba(0,0,0,.6) 100%),
+    linear-gradient(to bottom, rgba(7,9,12,.78) 0%, rgba(7,9,12,.12) 26%, rgba(7,9,12,.20) 58%, rgba(7,9,12,.94) 100%);
+}
+
+/* ---- overlay captions ---- */
+.hero__overlays{
+  position:absolute; inset:0; z-index:2;
+  display:grid; place-items:center;
+  padding:0 clamp(20px,5vw,60px);
+  pointer-events:none;
+}
+.cap{
+  grid-area:1/1;
+  text-align:center;
+  max-width:min(94vw,1000px);
+  opacity:0;
+  transform:translate3d(0,26px,0) scale(.985);
+  will-change:opacity,transform;
+  filter:blur(4px);
+}
+.cap__eyebrow{
+  display:inline-flex; align-items:center; gap:10px;
+  font-size:clamp(10px,1.1vw,12px); font-weight:600;
+  letter-spacing:.24em; text-transform:uppercase; color:var(--orange-2);
+  padding:7px 16px; border:1px solid rgba(var(--orange-rgb),.45);
+  border-radius:999px; background:rgba(var(--orange-rgb),.10);
+  backdrop-filter:blur(6px);
+  margin-bottom:22px;
+}
+.cap__eyebrow i{ width:5px; height:5px; border-radius:50%; background:var(--orange-2); animation:blink 1.8s infinite; }
+@keyframes blink{ 0%,100%{opacity:1} 50%{opacity:.25} }
+
+.cap__title{
+  margin:0;
+  font-size:clamp(34px,7.4vw,92px);
+  line-height:1.02;
+  font-weight:700;
+  letter-spacing:-.03em;
+  text-shadow:0 6px 40px rgba(0,0,0,.65);
+}
+.cap__title span{
+  background:linear-gradient(100deg,var(--orange),var(--amber) 52%,#fff);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.cap__sub{
+  margin:18px auto 0; max-width:640px;
+  font-size:clamp(14px,1.7vw,20px);
+  color:#cfd6e0; font-weight:400;
+  text-shadow:0 2px 18px rgba(0,0,0,.7);
+}
+
+/* ---- HUD ---- */
+.hero__hud{
+  position:absolute; z-index:3; left:clamp(20px,5vw,60px); right:clamp(20px,5vw,60px); bottom:clamp(26px,4vh,46px);
+  display:flex; flex-direction:column; gap:12px; pointer-events:none;
+}
+.hud__chapters{ display:flex; gap:22px; font-size:11px; letter-spacing:.2em; text-transform:uppercase; font-weight:600; }
+.hud__chapter{ color:var(--txt-3); transition:color .35s; display:flex; align-items:center; gap:7px; }
+.hud__chapter::before{
+  content:''; width:6px; height:6px; border-radius:50%;
+  background:currentColor; opacity:.5; transition:.35s;
+}
+.hud__chapter.is-on{ color:var(--orange-2); }
+.hud__chapter.is-on::before{ opacity:1; box-shadow:0 0 0 4px rgba(var(--orange-rgb),.20); }
+
+.hud__track{ height:2px; background:rgba(255,255,255,.14); border-radius:2px; overflow:hidden; }
+.hud__track i{
+  display:block; height:100%; width:0%;
+  background:linear-gradient(90deg,var(--orange-dk),var(--orange),var(--amber));
+}
+
+
+.hero__hint{
+  position:absolute; z-index:3; left:50%; bottom:clamp(78px,11vh,120px);
+  transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:11px;
+  font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--txt-2);
+  transition:opacity .5s var(--ease);
+  pointer-events:none;
+}
+.hero__hint.is-hidden{ opacity:0; }
+.mouse{
+  width:24px; height:38px; border:1.5px solid rgba(255,255,255,.4);
+  border-radius:14px; position:relative;
+}
+.mouse i{
+  position:absolute; left:50%; top:8px; width:3px; height:7px; border-radius:2px;
+  background:var(--orange-2); transform:translateX(-50%);
+  animation:wheel 1.7s var(--ease) infinite;
+}
+@keyframes wheel{ 0%{opacity:0;transform:translate(-50%,-4px)} 35%{opacity:1} 100%{opacity:0;transform:translate(-50%,14px)} }
+
+/* ==========================================================================
+   MARQUEE
+   ========================================================================== */
+.marquee{
+  overflow:hidden; border-block:1px solid var(--line-2);
+  background:var(--bg-2); padding:15px 0;
+  position:relative; z-index:2;
+}
+.marquee__track{ display:flex; width:max-content; animation:slide 38s linear infinite; }
+.marquee__track span{
+  font-size:13px; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--txt-3); font-weight:600; white-space:nowrap; padding-right:20px;
+}
+@keyframes slide{ to{ transform:translateX(-50%); } }
+
+/* ==========================================================================
+   REVEAL
+   ========================================================================== */
+/* A-05 — the resting state is visible. The reveal is decoration layered on
+   top by the browser, never a condition for the content being readable: this
+   used to sit at opacity:0 waiting on an IntersectionObserver, so a slow or
+   failed bundle left the page blank below the fold. */
+.reveal{ opacity:1; transform:none; --i:0; }
+
+@keyframes reveal-in{
+  from{ opacity:0; transform:translateY(26px); }
+  to  { opacity:1; transform:none; }
+}
+
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion: no-preference){
+    .reveal{
+      animation:reveal-in linear both;
+      animation-timeline:view();
+      /* --i staggers a row: each card starts a little further into its own
+         entry than the one before it. */
+      animation-range:entry calc(2% + var(--i, 0) * 4%) entry calc(46% + var(--i, 0) * 4%);
+    }
+  }
+}
+
+/* ==========================================================================
+   ABOUT
+   ========================================================================== */
+
+/* ==========================================================================
+   SERVICES
+   ========================================================================== */
+.services{ background:rgba(255,255,255,.014); }
+
+/* ==========================================================================
+   WHY
+   ========================================================================== */
+.why{ background:transparent; }
+.why__grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:0; border-top:1px solid var(--line-2); }
+.why__item{
+  padding:34px 30px 34px 0; border-bottom:1px solid var(--line-2);
+  position:relative;
+}
+.why__item + .why__item{ padding-left:30px; }
+.why__item b{
+  display:block; font-size:18px; font-weight:600; margin-bottom:9px;
+  padding-left:0;
+}
+.why__item b::before{
+  content:''; display:inline-block; width:8px; height:9px; margin-right:11px;
+  background:var(--orange); clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  vertical-align:middle;
+}
+.why__item p{ margin:0; color:var(--txt-2); font-size:14.8px; }
+
+/* ==========================================================================
+   TEAM — người đại diện lấy từ /api/landing/representatives
+   ========================================================================== */
+/* Nền do `.page-slide` lo. Trước đây khối này là `.section` trong suốt nằm
+   trên nền trang; giờ nó là một slide có nền của chính nó. */
+/* Khối này dùng đúng lề trong như mọi slide khác. Trước đây nó ghi đè
+   `width:100%` nên tiêu đề dính sát mép cửa sổ trong khi mọi slide bên cạnh
+   đều thụt vào 102px — đo được, không phải đoán. */
+/* `.page-slide` là lưới một cột tự co theo nội dung. Băng thẻ rộng bằng tổng
+   các thẻ, nên nếu không ghim cột lại thì cột phình ra bằng cả băng và slide
+   tràn ngang màn hình thay vì cuộn. `minmax(0,1fr)` = cột rộng đúng bằng slide,
+   không hơn. */
+.team{ grid-template-columns:minmax(0,1fr); }
+.team .lead{ color:var(--txt-2); max-width:640px; margin:14px 0 32px; }
+/* Băng trượt ngang. `.team-rail` là khung định vị cho hai nút mũi tên, còn
+   `.team-rail__view` mới là thứ cuộn — nút nằm ngoài vùng cuộn nên nó đứng yên
+   khi các thẻ chạy qua. */
+.team-rail{ position:relative; width:100%; }
+.team-rail__view{
+  /* `width:100%` + `min-width:0`: slide này là lưới `place-items:center`, con
+     của nó co theo nội dung — không ghim lại thì khung cuộn phình ra bằng cả
+     băng thẻ và chẳng còn gì để cuộn, nó chỉ tràn ra ngoài màn hình. */
+  width:100%; min-width:0;
+  overflow-x:auto; overflow-y:hidden;
+  /* Đệm dọc để thẻ nhấc lên khi rê chuột và quầng sáng của nó không bị khung
+     cuộn cắt phẳng; lề âm trả lại chỗ đó cho bố cục. */
+  padding:14px 0; margin:-14px 0;
+  overscroll-behavior-x:contain;
+  scrollbar-width:none;
+  /* Cuộn tức thời cho thao tác của người dùng; hai nút tự xin `smooth` riêng.
+     Để `smooth` ở đây thì mỗi nấc bánh xe là một hoạt ảnh xếp hàng chồng nhau. */
+  scroll-behavior:auto;
+}
+.team-rail__view::-webkit-scrollbar{ display:none; }
+.team-rail__view:focus-visible{ outline:2px solid var(--orange); outline-offset:4px; }
+.team-rail__track{
+  list-style:none; margin:0; padding:0;
+  display:flex; align-items:stretch; gap:22px; width:max-content;
+}
+/* Thẻ có bề ngang cố định: trong một băng trượt, thẻ co theo màn hình thì số
+   thẻ nhìn thấy đổi liên tục và không thẻ nào có cỡ đọc được ổn định. */
+.team-rail__track > .team__card{ width:clamp(268px,25vw,320px); flex:0 0 auto; }
+.team-rail__nav{
+  position:absolute; top:50%; translate:0 -50%; z-index:2;
+  width:46px; height:46px; border-radius:50%;
+  border:1px solid var(--line); background:rgba(255,255,255,.06);
+  color:var(--txt); backdrop-filter:blur(6px);
+  display:grid; place-items:center; cursor:pointer;
+  transition:background .16s, border-color .16s, color .16s;
+}
+.team-rail__nav:hover{
+  background:rgba(var(--orange-rgb),.16); border-color:var(--orange); color:var(--orange);
+}
+.team-rail__nav:focus-visible{ outline:2px solid var(--orange); outline-offset:3px; }
+.team-rail__nav[hidden]{ display:none; }
+/* Nút nằm HẲN ngoài cột nội dung, trong phần lề: đè lên thẻ thì nó che mất
+   một góc ảnh, và bấm vào mép thẻ lại trúng nút. */
+.team-rail__nav--prev{ left:-58px; }
+.team-rail__nav--next{ right:-58px; }
+/* Màn hẹp không còn lề để chứa nút, lúc đó nút lùi vào sát mép cột. */
+@media (max-width:1180px){
+  .team-rail__nav--prev{ left:-4px; }
+  .team-rail__nav--next{ right:-4px; }
+}
+/* Cảm ứng: vuốt là đủ, mỗi thẻ dừng gọn ở mép trái. Hai nút mũi tên giấu đi —
+   ngón tay không cần chúng, và ở khổ hẹp chúng đè lên chính thẻ. */
+@media (hover:none){
+  .team-rail__nav{ display:none; }
+  .team-rail__view{ scroll-snap-type:x mandatory; }
+  .team-rail__track > .team__card{ scroll-snap-align:start; }
+}
+
+/* Thẻ dọc: khung ảnh nền sáng ở trên, chữ ở dưới, liên hệ bám đáy. `flex` cột
+   + `margin-top:auto` ở khối liên hệ để mọi thẻ có hàng liên hệ thẳng nhau dù
+   mô tả dài ngắn khác nhau. */
+.team__card{
+  display:flex; flex-direction:column;
+  padding:12px; border:1px solid var(--line-2); border-radius:18px;
+  /* Sáng hơn nền một bậc bằng lớp trắng mờ chứ không bằng một mã màu cố định:
+     nền slide là màu trung tính, còn các biến --bg-* ngả xanh nên thẻ sẽ lạc
+     tông so với nền ngay bên cạnh. */
+  background:rgba(255,255,255,.045);
+  transition:border-color .18s, box-shadow .22s, transform .18s;
+}
+.team__card:hover{
+  border-color:var(--orange); transform:translateY(-3px);
+  /* Quầng sáng theo màu thương hiệu thay vì đổi nền: nền sáng lên thì chữ xám
+     tụt tương phản, còn quầng nằm ngoài viền nên không đụng tới chữ. */
+  box-shadow:0 0 0 1px rgba(var(--orange-rgb),.35), 0 0 26px rgba(var(--orange-rgb),.22);
+}
+/* Khung ảnh nền sáng, bo góc, thụt vào trong thẻ. Chặn theo chiều cao màn hình:
+   khối này là một slide chiếm trọn màn và bị neo cứng (scroll-snap), nên ảnh
+   quá cao là đẩy phần liên hệ xuống dưới tầm nhìn. */
+.team__photo{
+  position:relative; aspect-ratio:4/3.4; max-height:clamp(170px,28svh,300px);
+  border-radius:12px; overflow:hidden; background:#fff;
+  display:flex; align-items:center; justify-content:center;
+}
+.team__photo img{
+  width:100%; height:100%; display:block;
+  /* `cover` + `center`: ảnh chân dung nào cũng có mặt ở giữa khung, còn `top`
+     thì ảnh chụp nghiêng bị cắt mất cằm. */
+  object-fit:cover; object-position:center;
+  transition:transform .35s ease;
+}
+.team__card:hover .team__photo img{ transform:scale(1.04); }
+/* Chưa có ảnh: chữ cái đầu tên trên nền sáng, không phải một ô trắng trống. */
+.team__initials{
+  color:var(--orange); font-weight:800; font-size:52px; letter-spacing:1px;
+}
+.team__body{ min-width:0; display:flex; flex-direction:column; flex:1; padding:14px 6px 2px; }
+/* Tên mang màu nhấn và cắt đúng MỘT dòng: tên dài hai dòng làm mọi thẻ trong
+   hàng so le nhau. */
+.team__name{
+  color:var(--orange); font-weight:700; font-size:18px; line-height:1.3;
+  margin-bottom:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.team__dept{
+  color:var(--txt); font-size:13.5px; font-weight:600;
+  letter-spacing:.02em; text-transform:uppercase;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+/* Mô tả cắt đúng hai dòng: nó là câu giới thiệu, không phải tiểu sử, và hai
+   dòng giữ cho mọi thẻ cùng chiều cao. */
+.team__desc{
+  margin:10px 0 0; color:var(--txt-2); font-size:14px; line-height:1.55;
+  display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2;
+  overflow:hidden;
+}
+/* Liên hệ bám đáy thẻ, ngăn với phần trên bằng một vạch mảnh. */
+.team__tags{
+  margin-top:auto; padding-top:14px; border-top:1px solid var(--line-2);
+  display:flex; flex-wrap:wrap; gap:8px;
+}
+.team__tag{
+  display:inline-flex; align-items:center; min-height:36px;
+  padding:6px 14px; border:1px solid var(--line); border-radius:999px;
+  color:var(--txt-2); font-size:13px; text-decoration:none;
+  /* Email dài thì XUỐNG DÒNG trong viên chứ không cắt bằng dấu ba chấm: một
+     địa chỉ bị cắt là một địa chỉ không chép lại được bằng mắt. */
+  max-width:100%; word-break:break-word;
+  transition:color .15s, border-color .15s;
+}
+.team__tag:hover{ color:var(--orange); border-color:var(--orange); }
+/* Băng trượt giữ mọi thẻ trên MỘT hàng nên không còn chuyện "đủ 5 người thì
+   tràn xuống hàng hai" — các luật co theo số thẻ đã bỏ cùng lúc bỏ lưới. */
+
+/* ==========================================================================
+   PROCESS
+   ========================================================================== */
+.process{ background:transparent; }
+
+
+
+/* ==========================================================================
+   FLEET
+   ========================================================================== */
+.fleet{ background:transparent; }
+.fleet__grid{ display:grid; grid-template-columns:.9fr 1.1fr; gap:clamp(36px,6vw,80px); align-items:center; }
+.fleet__list{ list-style:none; margin:0; padding:0; }
+.fleet__list li{
+  display:flex; align-items:baseline; justify-content:space-between; gap:20px;
+  padding:20px 4px; border-bottom:1px solid var(--line-2);
+  transition:padding-left .35s var(--ease), border-color .35s;
+}
+.fleet__list li:first-child{ border-top:1px solid var(--line-2); }
+.fleet__list li:hover{ padding-left:14px; border-color:rgba(var(--orange-rgb),.45); }
+.fleet__list b{ font-size:17px; font-weight:600; }
+.fleet__list span{ font-size:13.5px; color:var(--orange-2); letter-spacing:.05em; white-space:nowrap; }
+
+/* ==========================================================================
+   CTA BAND
+   ========================================================================== */
+.cta-band{
+  position:relative; z-index:1; overflow:hidden; isolation:isolate;
+  /* the photo's own lower half is this colour, so the copy always sits on it
+     however the image is cropped */
+  background:var(--ground);
+  /* two equal halves: the truck owns the top one, the copy sits centred in
+     the bottom one */
+  display:grid; grid-template-rows:1fr 1fr; align-items:center;
+  min-height:clamp(640px, 66.67vw, 960px);
+  padding:0;
+}
+.cta-band__inner{ grid-row:2; }
+/* Cover from the centre: on wide screens the section caps at 960px while the
+   photo has to scale past that to span the width, and a centred crop trims
+   sky and tarmac equally so the truck stays at ~52% of the height, clear of
+   the heading. A top anchor would push it down onto the copy. */
+.cta-band__img{
+  object-fit:cover; object-position:50% 50%; z-index:-2; pointer-events:none;
+}
+/* Narrow screens see a thin centre slice of the photo, which cuts the logo on
+   the trailer in half at the left edge. Anchor at 30% so it stays whole. */
+@media (max-width:620px){
+  .cta-band__img{ object-position:30% 50%; }
+}
+/* fade the photo into the panel so text never lands on the bright sky */
+.cta-band::before{
+  content:""; position:absolute; inset:0; z-index:-1; pointer-events:none;
+  background:linear-gradient(to bottom, transparent 42%, rgba(28,28,28,.85) 56%, var(--ground) 64%);
+}
+.cta-band__inner{ text-align:center; padding-block:24px; }
+.cta-band h2{
+  font-size:clamp(30px,4.2vw,58px); font-weight:700; letter-spacing:-.02em; margin:0 0 14px;
+  color:#fff;
+}
+.cta-band p{ color:#c9cfd8; font-size:clamp(15px,1.4vw,19px); margin:0 auto 38px; max-width:820px; }
+.btn--cta{
+  background:var(--orange); color:#fff; padding-inline:44px;
+  box-shadow:0 8px 30px -10px rgba(var(--orange-rgb),.6);
+}
+.btn--cta:hover{ background:var(--orange-2); transform:translateY(-2px); }
+.btn--cta svg{ width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+
+/* ==========================================================================
+   PARTNER BAND
+   The service promise over a night road, with the carriers ruled out beneath
+   it. Dark like the CTA band and drawn the same way — a fill image behind the
+   content with a gradient over it — but the copy is centred in the frame
+   rather than parked in one half, so the veil carries further down the photo.
+   ========================================================================== */
+.partners{
+  --pl-line:rgba(255,255,255,.26);
+
+  position:relative; z-index:1; overflow:hidden; isolation:isolate;
+  /* the photo's own sky is this colour, so the copy always sits on it however
+     the image is cropped */
+  background:#0c0c0e; color:#fff;
+  /* the copy and the logos sit centred in the frame; the road runs underneath
+     them and out of the bottom edge */
+  display:grid; place-items:center;
+  /* Cot co dinh bang khung. De mac dinh thi cot gian theo noi dung, ma dai logo
+     chay dai hang chuc nghin px — ca khoi bi day lech ra ngoai man hinh. */
+  grid-template-columns:minmax(0,1fr);
+  min-height:clamp(620px, 62.5vw, 900px);
+  padding:clamp(64px,9vh,120px) 0;
+}
+.partners__inner{ text-align:center; }
+/* Anchored to the bottom: the road is the whole subject and it runs along the
+   photo's lower edge, so a centred crop would cut the curve away on a wide
+   viewport. What it leaves above is flat night sky and crops to nothing. */
+.partners__img{
+  object-fit:cover; object-position:50% 100%; z-index:-2; pointer-events:none;
+}
+/* Hold most of the frame down so the centred copy always has its contrast, and
+   release it over the last sixth so the road still reads along the bottom edge. */
+.partners::before{
+  content:""; position:absolute; inset:0; z-index:-1; pointer-events:none;
+  background:linear-gradient(to bottom, rgba(12,12,14,.94) 0%, rgba(12,12,14,.88) 46%, rgba(12,12,14,.62) 70%, rgba(12,12,14,.18) 88%, transparent 100%);
+}
+
+/* Hai dải logo chạy ngang. Mỗi dải là một hàng ô kẻ dọc giữa hai đường kẻ
+   ngang, trượt không dứt — xem LogoRow. */
+.partners__rows{
+  text-align:left; display:grid; gap:clamp(36px,6vh,64px);
+  grid-template-columns:minmax(0,1fr);   /* cung ly do nhu .partners */
+}
+/* Khối số liệu trên mỗi dải, căn giữa: số lớn màu cam, chú thích nhỏ dưới. */
+.logo-row__stat{ text-align:center; margin-bottom:clamp(10px,1.4vh,16px); }
+.logo-row__num{
+  margin:0; color:var(--orange); line-height:1;
+  font-size:clamp(36px,3.6vw,56px); font-weight:700; letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;
+}
+.logo-row__num .count{ font-weight:inherit; }
+.logo-row__title{
+  margin:clamp(4px,.8vh,8px) 0 0;
+  font-size:clamp(15px,1.35vw,20px); color:rgba(255,255,255,.72);
+}
+/* Dải nằm GỌN trong khung nội dung: bắt đầu thẳng hàng với nhãn "Our
+   customers" và dừng ở lề phải, không tràn ra ngoài. Chỉ mờ một khoảng rất
+   ngắn ở hai đầu cho logo không bị cắt phẳng như dao.
+
+   Làm bằng MASK chứ không phủ một dải màu lên trên — dải dưới nằm đè lên ảnh
+   con đường, mà một dải màu đặc sẽ hiện thành hai khối tối trên ảnh. */
+.logo-row__view{
+  overflow:hidden;
+  border-block:1px solid var(--pl-line);
+  --fade:linear-gradient(90deg, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+  -webkit-mask-image:var(--fade); mask-image:var(--fade);
+}
+.logo-row__track{
+  list-style:none; margin:0; padding:0;
+  display:flex; width:max-content;
+  /* Mọi dải cùng một nhịp: thời gian tỷ lệ với số ô. */
+  animation:logo-left calc(var(--n) * 3s) linear infinite;
+}
+.logo-row__track--right{ animation-name:logo-right; }
+/* Dừng khi rê chuột hay đưa tiêu điểm vào, để đọc được tên — nội dung tự chạy
+   quá 5 giây phải dừng được (WCAG 2.2.2). */
+.logo-row__view:hover .logo-row__track,
+.logo-row__view:focus-within .logo-row__track{ animation-play-state:paused; }
+@keyframes logo-left{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+@keyframes logo-right{ from{ transform:translateX(-50%); } to{ transform:translateX(0); } }
+.logo-row__cell{
+  flex:none; display:grid; place-items:center;
+  width:clamp(140px,13.9vw,200px); height:clamp(96px,min(10.4vw,15.6vh),150px);
+  padding:0 clamp(14px,1.6vw,24px);
+  border-left:1px solid var(--pl-line);
+}
+.logo-row__mark{ width:auto; max-width:100%; object-fit:contain; }   /* cao: xem caoLogo() */
+/* Van CHAY khi may bat "giam chuyen dong" — theo yeu cau, vi dai dung im thi
+   khong ai biet no la mot dai logo con nhieu hang phia sau. Chi cham lai mot
+   nua; re chuot hay dua tieu diem vao van dung han (o tren). */
+@media (prefers-reduced-motion:reduce){
+  .logo-row__track{ animation-duration:calc(var(--n) * 4.8s); }
+}
+
+/* Plays in on arrival, for the reason given under LIGHT SLIDE: on a snapping
+   slide a scroll-driven .reveal is over before the snap settles. */
+.partners.is-armed .partners__rows{ opacity:0; }
+.partners.is-armed.is-in .partners__rows{
+  animation:slide-line-in .72s var(--ease) both;
+}
+
+/* ==========================================================================
+   LIGHT SLIDE
+   One statement, held on a pale drafting-paper ground. The rest of the site is
+   dark, so this slide carries its own colours rather than the page tokens —
+   they would all have to be inverted otherwise.
+   ========================================================================== */
+.slide-light{
+  --light-bg:   #f4f6f8;
+  --light-ink:  #16232e;
+  --light-line: rgba(22,35,46,.07);
+  --light-cell: 112px;
+
+  position:relative; z-index:1; overflow:hidden;
+  background:var(--light-bg); color:var(--light-ink);
+  display:grid; place-items:center;
+  min-height:100svh;
+  padding:clamp(72px,10vh,140px) 0;
+}
+/* the drafting grid: squares only, no dots — this is paper, not the hero */
+.slide-light::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(to right, var(--light-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--light-line) 1px, transparent 1px);
+  background-size:var(--light-cell) var(--light-cell);
+  /* strongest at the top edge and fading downwards, so the copy sits on the
+     cleaner half of the paper without the grid stopping dead */
+  -webkit-mask-image:linear-gradient(to bottom, #000, rgba(0,0,0,.28));
+  mask-image:linear-gradient(to bottom, #000, rgba(0,0,0,.28));
+}
+
+.about-intro__inner{
+  position:relative; text-align:center;
+  width:min(100% - 40px, 1040px);
+  display:grid; gap:clamp(30px,5vh,64px);
+}
+.about-intro__line{
+  margin:0; font-weight:700; letter-spacing:-.01em;
+  font-size:clamp(20px,2.6vw,40px); line-height:1.4;
+}
+.about-intro__motto{ font-style:normal; font-weight:700; color:var(--orange); }
+
+/* ---- second introduction slide: photograph beside the figures ---- */
+/* Tighter than the statement slide: this one carries a square photograph and
+   still has to fit a 720px-tall laptop screen without spilling past the snap. */
+.about-detail{ padding-block:clamp(40px,6vh,88px); }
+.about-detail__grid{
+  position:relative;
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:clamp(30px,4.5vw,72px); align-items:center;
+}
+.about-detail__figure{
+  position:relative; aspect-ratio:1/1; overflow:hidden;
+  /* the cap wins on short screens; the crop stays close to square */
+  max-height:78svh;
+  border-radius:8px; background:#dfe3e8;
+}
+.about-detail__img{ object-fit:cover; }
+
+.about-detail__lead{
+  margin:0 0 clamp(24px,3.6vh,44px);
+  font-size:clamp(15.5px,1.35vw,21px); line-height:1.6; font-weight:500;
+}
+.about-detail__facts{ margin:0 0 clamp(24px,3.4vh,40px); }
+.fact{
+  display:grid; grid-template-columns:minmax(110px,.36fr) 1fr;
+  gap:clamp(14px,2vw,32px); align-items:start;
+  padding:clamp(13px,1.9vh,21px) 0;
+  border-bottom:1px solid rgba(22,35,46,.13);
+}
+.fact dt{
+  font-size:clamp(28px,3.1vw,50px); font-weight:700; line-height:1;
+  letter-spacing:-.02em; font-variant-numeric:tabular-nums;
+}
+.fact dd{
+  margin:0; font-size:clamp(13px,1.05vw,16px); line-height:1.55;
+  color:rgba(22,35,46,.62);
+}
+
+/* Content plays in when the slide arrives — see components/InView.tsx for why
+   this is not a scroll-driven animation like .reveal. `is-armed` is only ever
+   set by that script, so without it the content simply shows. */
+.slide-light.is-armed .about-intro__line,
+.slide-light.is-armed .about-detail__figure,
+.slide-light.is-armed .about-detail__body{ opacity:0; }
+.slide-light.is-armed.is-in .about-intro__line,
+.slide-light.is-armed.is-in .about-detail__figure,
+.slide-light.is-armed.is-in .about-detail__body{
+  animation:slide-line-in .72s var(--ease) both;
+}
+.slide-light.is-armed.is-in .about-intro__line:nth-child(2),
+.slide-light.is-armed.is-in .about-detail__body{ animation-delay:.16s; }
+
+@keyframes slide-line-in{
+  from{ opacity:0; transform:translateY(28px); }
+  to  { opacity:1; transform:none; }
+}
+
+/* ---- services carousel ---- */
+/* A light slide like the two before it, but its content is a row that runs
+   the full width of the screen rather than a block inside the wrap. */
+.services-slide{ padding-block:clamp(44px,6.5vh,92px); }
+.services-slide__inner{
+  /* how far in from each edge the row is washed back into the paper */
+  --svc-fade:clamp(48px,12vw,200px);
+  /* Lề của hàng thẻ ở hai đầu. Trước đây là lề của tiêu đề (.wrap), và trên
+     màn lớn thẻ đầu đứng cách mép trái 350px (1920) tới 670px (2560) — nửa
+     trái màn hình trống trơn. Giờ hàng chạy sát hai mép, thẻ phủ kín hai bên.
+     Dưới ~1260px con số này trùng với lề của tiêu đề như cũ. */
+  --svc-gutter:clamp(20px,1.6vw,40px);
+
+  position:relative; width:100%;
+  display:grid; grid-template-rows:auto auto; gap:clamp(24px,4vh,52px);
+}
+/* Both rows are placed by hand. The fades below are grid items of this element
+   like any other, and left to auto-placement they take the row of cards for
+   themselves and push it down into a third, empty-looking one. */
+.services-slide__inner > .wrap{ grid-area:1 / 1; }
+.services-slide__inner > .svc-rail{ grid-area:2 / 1; }
+
+
+/* The row is cut off by the screen, not by a container, so its cards would
+   otherwise end mid-stroke against the window edge. These two panels wash them
+   back into the paper on the way out — the ground colour at full strength hard
+   against each edge, clearing by the time a card is properly on screen.
+
+   They are the grid's own ::before and ::after placed in the row's track: a
+   pseudo-element on .svc-rail itself would scroll away with the cards, since
+   that is the scroll container, and one on this grid without a track would
+   reach up and wash out the start of the heading as well. */
+.services-slide__inner::before,
+.services-slide__inner::after{
+  content:''; grid-row:2; grid-column:1;
+  width:var(--svc-fade); z-index:3; pointer-events:none;
+}
+/* Soft, never solid: at full strength against the edge the wash read as a
+   glaring white band laid over the card it crosses. */
+.services-slide__inner::before{
+  justify-self:start;
+  background:linear-gradient(to right, rgba(244,246,248,.6), rgba(244,246,248,0));
+}
+.services-slide__inner::after{
+  justify-self:end;
+  background:linear-gradient(to left, rgba(244,246,248,.6), rgba(244,246,248,0));
+}
+/* On a phone the edge is the card's own peek; a narrow, faint wash is enough. */
+@media (hover:none){
+  .services-slide__inner{ --svc-fade:28px; }
+}
+.services-slide__title{
+  margin:0; font-weight:700; letter-spacing:-.025em; line-height:1.08;
+  font-size:clamp(30px,4.4vw,64px);
+}
+
+/* The row itself, running the full width of the screen, first card to last.
+   The first card sits --svc-gutter in from the left edge and the last one
+   ends the same distance from the right — that inset lives on the track, not
+   on the scroller, because only the track's padding is counted in how far the
+   row can scroll. A row shorter than the screen (few services, a very wide
+   screen) sits in the middle of it. */
+.svc-rail{
+  /* room above and below for a lifted card and its shadow: the scroller clips
+     both axes once one of them scrolls, so without this the zoom would be cut
+     flat. The negative margin gives the room back to the layout. */
+  /* scale(1.06) of a 40svh card plus the shadow's reach below it */
+  --svc-lift-room:clamp(44px,6.5vh,64px);
+
+  overflow-x:auto; overflow-y:hidden;
+  /* ServiceRail eases scrollLeft itself, frame by frame; the page's own smooth
+     scrolling would queue an animation against every one of those writes. */
+  scroll-behavior:auto;
+  overscroll-behavior-x:contain;
+  /* No scrollbar: the row is driven by hover, the wheel and dragging, and the
+     comp has none. Three declarations because no engine agrees on this yet. */
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+  padding-block:var(--svc-lift-room);
+  margin-block:calc(var(--svc-lift-room) * -1);
+}
+.svc-rail:focus-visible{ outline:2px solid var(--orange); outline-offset:-2px; }
+.svc-rail::-webkit-scrollbar{ display:none; }
+.svc-rail__track{
+  list-style:none; margin:0 auto;
+  padding:0 var(--svc-gutter);
+  width:max-content;
+  /* flex-start, not the default stretch: the cards set their own height */
+  display:flex; align-items:flex-start; gap:clamp(14px,1.5vw,24px);
+}
+
+/* Touch screens: a plain native swipe, as the card shelves on app stores do —
+   momentum, and each card's start coming to rest on the row's gutter with
+   the next card showing past the edge. No card is singled out on touch; a
+   fling can carry past several cards, as it does anywhere else. */
+@media (hover:none){
+  .svc-rail{
+    scroll-snap-type:x mandatory;
+    scroll-padding-inline:var(--svc-gutter);
+  }
+  .svc-card{ scroll-snap-align:start; }
+}
+
+/* The edge washes only show where there are cards beyond the edge: at rest the
+   first card sits in the clear, and at the far end so does the last. */
+.services-slide__inner::before,
+.services-slide__inner::after{ transition:opacity .35s var(--ease); }
+.services-slide__inner[data-rail-start]::before,
+.services-slide__inner[data-rail-end]::after,
+.services-slide__inner[data-rail-selecting]::before,
+.services-slide__inner[data-rail-selecting]::after{ opacity:0; }
+
+/* ---- one card ---- */
+/* The proportions are the comp's: a tall portrait card, four and a bit of them
+   across a laptop screen with the fifth cut by the edge. Two fifths of the
+   screen tall, with the width following from the comp's proportions. The
+   floor is for short landscape screens. */
+.svc-card{
+  position:relative; flex:0 0 auto;
+  height:40svh; min-height:280px;
+  width:auto; aspect-ratio:41/57;
+  /* the face sizes itself to the card, not the screen — see @container below.
+     `size`, not `inline-size`: short cards are laid out by their height too. */
+  container-type:size;
+}
+/* What lifts. Transform and opacity only — both run on the compositor, so the
+   lift stays smooth while the row is gliding underneath it. */
+.svc-card__inner{
+  position:absolute; inset:0;
+  border-radius:var(--radius);
+  transition:transform .5s var(--ease), opacity .5s var(--ease);
+}
+/* The shadow is drawn once, at full strength, and faded in: animating
+   box-shadow itself repaints the card on every frame of the lift. */
+.svc-card__inner::before{
+  content:''; position:absolute; inset:0; z-index:-1;
+  border-radius:inherit; pointer-events:none;
+  box-shadow:
+    0 18px 32px -12px rgba(10,16,24,.42),
+    0 6px 14px -6px rgba(10,16,24,.24);
+  opacity:0;
+  transition:opacity .5s var(--ease);
+}
+/* Selected: chosen by ServiceRail on hover (not :hover — see there), and by
+   keyboard focus. It has to read as THE card at a glance, not as a card that
+   is a little bigger than the rest, so it changes on every count: it comes
+   forward (zoom, a soft shadow, a brighter photograph), it is ringed in orange, its call
+   to action turns into a filled button — and every other card steps back,
+   smaller and faded. Above its neighbours so the zoom is not tucked under one. */
+.svc-card.is-active,
+.svc-card:focus-within{ z-index:2; }
+.svc-card.is-active .svc-card__inner,
+.svc-card:focus-within .svc-card__inner{ transform:scale(1.08); }
+.svc-card.is-active .svc-card__inner::before,
+.svc-card:focus-within .svc-card__inner::before{ opacity:1; }
+/* the ring: drawn over the face, faded in like the shadow */
+.svc-card__inner::after{
+  content:''; position:absolute; inset:0; z-index:3; pointer-events:none;
+  border-radius:inherit;
+  box-shadow:inset 0 0 0 2px var(--orange), 0 0 0 4px rgba(var(--orange-rgb),.18);
+  opacity:0;
+  transition:opacity .45s var(--ease);
+}
+.svc-card.is-active .svc-card__inner::after,
+.svc-card:focus-within .svc-card__inner::after{ opacity:1; }
+/* the rest step back while one is selected */
+.svc-rail[data-selecting] .svc-card:not(.is-active) .svc-card__inner,
+.svc-rail:has(.svc-card:focus-within) .svc-card:not(:focus-within) .svc-card__inner{
+  transform:scale(.95); opacity:.5;
+}
+
+.svc-face{
+  position:absolute; inset:0; overflow:hidden;
+  border-radius:var(--radius);
+  background:linear-gradient(168deg,#1c222b,#0a0d12);
+  /* a column: the name on top, the panel at the foot, and the panel can grow
+     only into the space between them — never over the name */
+  display:flex; flex-direction:column;
+}
+/* The selected card lights up rather than glowing orange: its photograph
+   brightens a little and drifts in a touch — depth, not motion. */
+.svc-face__img{
+  object-fit:cover;
+  transition:transform .7s var(--ease), filter .5s var(--ease);
+}
+.svc-card.is-active .svc-face__img,
+.svc-card:focus-within .svc-face__img{ transform:scale(1.05); filter:brightness(1.12) saturate(1.06); }
+/* Scrims: the name is held on one across the top, the number and the way
+   through on one across the foot. */
+.svc-face::after{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:
+    linear-gradient(to bottom,
+      rgba(8,10,13,.94) 0%, rgba(8,10,13,.74) 24%, rgba(8,10,13,.14) 50%, transparent 68%),
+    linear-gradient(to top,
+      rgba(8,10,13,.86) 0%, rgba(8,10,13,.4) 20%, transparent 36%);
+}
+.svc-face__name{
+  position:relative; z-index:1; flex:none;
+  padding:clamp(16px,1.9vw,26px);
+  color:#fff; font-weight:700; line-height:1.28; letter-spacing:-.01em;
+  font-size:clamp(15px,1.45vw,21px);
+}
+/* The foot of the card: the scope points (opened below) above the number and
+   the way through. One block, anchored to the bottom, so the points push up
+   from the foot rather than covering the name at the top. */
+.svc-face__panel{
+  /* not positioned: its glass layer below measures against the whole face */
+  margin-top:auto; min-height:0;
+  display:flex; flex-direction:column;
+}
+/* Frosted glass over the WHOLE card while it is selected: the photograph is
+   blurred and darkened, and the details sit on it sharp. It fades — quickly,
+   180ms, so it reads as the card answering the pointer, not as an animation
+   to wait for. Opacity only: no height change, nothing slides. */
+.svc-face__panel::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:rgba(8,10,13,.58);
+  -webkit-backdrop-filter:blur(12px) saturate(1.1);
+  backdrop-filter:blur(12px) saturate(1.1);
+  opacity:0;
+  transition:opacity .18s ease-out;
+}
+/* The details: the scope points, in full once the card is selected. Laid out
+   all the time and faded with the glass, so opening them moves nothing. */
+.svc-face__more{
+  position:relative; z-index:1;
+  opacity:0;
+  transition:opacity .18s ease-out;
+}
+.svc-face__points{
+  margin:0; padding:0 18px 0 34px;
+  display:grid; gap:5px; align-content:start;
+  font-size:12.5px; line-height:1.45; color:rgba(255,255,255,.9);
+}
+.svc-face__points li::marker{ color:var(--orange); }
+/* Selected: glass and details in. With a mouse or the keyboard only — on a
+   touch screen they are always shown, below. */
+.svc-card.is-active .svc-face__more,
+.svc-card:focus-within .svc-face__more,
+.svc-card.is-active .svc-face__panel::before,
+.svc-card:focus-within .svc-face__panel::before{ opacity:1; }
+/* Touch: nothing can be hovered, so the details are always shown in full
+   (WCAG 1.4.13: no hover-only content) — the glass covers the lower part,
+   feathered, so the photograph still reads above it. The card is sized for
+   that on touch; see the touch block after the container queries below. */
+@media (hover:none){
+  .svc-face__more{ opacity:1; }
+  /* Lighter glass than the desktop hover: the text should carry the card,
+     roughly six parts text to four of photograph showing through — so less
+     blur and a thinner tint, with a fine shadow under the letters instead. */
+  .svc-face__panel::before{
+    opacity:1;
+    background:rgba(8,10,13,.4);
+    -webkit-backdrop-filter:blur(6px);
+    backdrop-filter:blur(6px);
+    -webkit-mask-image:linear-gradient(to bottom, transparent 18%, #000 42%);
+    mask-image:linear-gradient(to bottom, transparent 18%, #000 42%);
+  }
+  .svc-face__points,
+  .svc-face__name{ text-shadow:0 1px 2px rgba(0,0,0,.55), 0 0 12px rgba(0,0,0,.35); }
+}
+.svc-face__foot{
+  position:relative; z-index:1;
+  padding:14px 18px 16px;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+}
+.svc-face__no{
+  flex:none;
+  font-size:34px; font-weight:700; line-height:1;
+  letter-spacing:-.03em; color:var(--orange);
+}
+/* A pill in both states, the same size in both: selecting a card only fills
+   it. It used to grow padding when selected, and on a laptop-sized card that
+   pushed the label onto two lines. */
+.svc-face__cta{
+  flex:none; white-space:nowrap;
+  display:inline-flex; align-items:center; gap:6px;
+  padding:7px 12px 7px 14px; border-radius:999px;
+  border:1px solid rgba(255,255,255,.34);
+  background:rgba(8,10,13,.28);
+  color:#fff; font-weight:600; font-size:13px; line-height:1.2;
+  transition:background-color .4s var(--ease), border-color .4s var(--ease);
+}
+/* Cards are 200–320px wide depending on the screen's height, so the foot is
+   sized against the card itself. */
+@container (max-width:240px){
+  .svc-face__foot{ padding:10px 12px 12px 14px; gap:8px; }
+  .svc-face__points{ font-size:11.5px; padding:0 12px 0 28px; gap:4px; }
+  .svc-face__no{ font-size:26px; }
+  .svc-face__cta{ font-size:12px; padding:6px 10px 6px 11px; gap:5px; }
+  .svc-face__cta svg{ width:14px; height:14px; }
+}
+/* Short cards (a laptop screen 720–770px tall makes them ~290–310px): the
+   full scope list on a selected card needs the room, so the name and the
+   list tighten up. Measured: without this the longest English entry ran
+   28px past a 1280×720 card and pushed the button off its foot. */
+@container (max-height:330px){
+  .svc-face__name{ padding:14px 14px 8px; font-size:15px; line-height:1.24; }
+  .svc-face__points{ line-height:1.36; gap:3px; }
+  .svc-face__foot{ padding-top:8px; }
+}
+/* Touch: the details are always open, so every point is shown whole, in type
+   that grows with the screen — and the card is made for it: wider and taller
+   than the desktop portrait (a phone's slide has the room below the row), no
+   longer tied to the photograph's proportions. After the container queries
+   on purpose, so a phone card never takes their desktop squeeze. */
+@media (hover:none){
+  .svc-card{
+    width:min(78vw, 360px); height:min(60svh, 520px);
+    aspect-ratio:auto; min-height:0;
+  }
+  .svc-face__name{
+    padding:18px 18px 10px;
+    font-size:clamp(16px, 4.7vw, 21px); line-height:1.26;
+  }
+  .svc-face__points{
+    padding:0 18px 0 36px; gap:7px;
+    font-size:clamp(13.5px, 3.8vw, 16px); line-height:1.45;
+  }
+  .svc-face__points li{ display:list-item; overflow:visible; }
+  .svc-face__foot{ padding:14px 18px 18px; }
+  .svc-face__no{ font-size:clamp(28px, 8vw, 38px); }
+  .svc-face__cta{ font-size:clamp(13px, 3.6vw, 15px); padding:8px 14px 8px 16px; }
+}
+.svc-face__cta svg{
+  width:16px; height:16px; flex:none;
+  fill:none; stroke:currentColor; stroke-width:2;
+  stroke-linecap:round; stroke-linejoin:round;
+  transition:transform .5s var(--ease);
+}
+/* selected: the call to action fills */
+.svc-card.is-active .svc-face__cta,
+.svc-card:focus-within .svc-face__cta{
+  background:var(--orange); border-color:var(--orange);
+}
+.svc-card.is-active .svc-face__cta svg,
+.svc-card:focus-within .svc-face__cta svg{ transform:translateX(3px); }
+/* Stands in until the photography lands. Deliberately quiet: it is a plate,
+   not a graphic anyone should mistake for the finished card. */
+.svc-face__plate{
+  position:absolute; inset:auto 0 0 0;
+  padding:0 clamp(16px,1.9vw,26px) clamp(14px,1.8vw,24px);
+  font-size:clamp(56px,7vw,104px); font-weight:700; line-height:1;
+  letter-spacing:-.04em; color:rgba(255,255,255,.06);
+}
+
+/* The whole card is the link. */
+.svc-card__link{
+  position:absolute; inset:0; z-index:2;
+  border-radius:var(--radius);
+}
+.svc-card__link:focus-visible{ outline:2px solid var(--orange); outline-offset:3px; }
+
+.slide-light.is-armed .services-slide__title,
+.slide-light.is-armed .svc-rail{ opacity:0; }
+.slide-light.is-armed.is-in .services-slide__title,
+.slide-light.is-armed.is-in .svc-rail{
+  animation:slide-line-in .72s var(--ease) both;
+}
+.slide-light.is-armed.is-in .svc-rail{ animation-delay:.16s; }
+
+/* ==========================================================================
+   HOME SLIDES
+   The home page is a stack of full-screen slides, from the hero down to the
+   call to action, and scrolling snaps from one to the next. The footer is not
+   among them. Pure CSS scroll-snap, scoped to the page through
+   `main.home-slides` so nothing here touches other pages.
+   Browsers without :has() simply scroll normally.
+
+   The hero is one screen like the rest; its film plays itself, and a wheel
+   over it pages away like anywhere else — see lib/hero/engine.ts.
+   ========================================================================== */
+/* `mandatory`: mot cu cuon di tron mot man hinh, khong dung lung chung giua
+   hai slide. Truoc day day la `proximity` vi duoi mandatory ma chan trang
+   khong co diem neo thi khoang 780px cuoi tai lieu bi trinh duyet keo tuot
+   xuong day — do duoc: dat o 5000 thi no keo xuong 5276. Cach chua khong phai
+   la bo mandatory ma la cho chan trang mot diem neo cua rieng no, ngay duoi
+   day. */
+html:has(.home-slides){ scroll-snap-type:y mandatory; }
+/* `auto`, de doi lai `scroll-behavior:smooth` dat o html.
+   Snap chay theo scroll-behavior cua chinh khung cuon: de `smooth` thi moi lan
+   snap la mot hoat anh truot co gia toc, doc ra thanh "cuon mot cai roi khung
+   lai mot nhip moi di". Trang snap thi diem nghi da la tron mot man hinh san,
+   khong can ai lam muot them. Neo trong trang (#lien-he...) tren nhung trang
+   nay vi the cung nhay thang thay vi truot — dung y. */
+html:has(.home-slides),
+html:has(.page-slides){ scroll-behavior:auto; }
+.home-slides > .hero{ scroll-snap-align:start; }
+.home-slides > .slide-light{
+  scroll-snap-align:start; scroll-snap-stop:always;
+}
+.home-slides > .partners{
+  scroll-snap-align:start; scroll-snap-stop:always;
+  min-height:100svh;
+  /* Can giua trong vung DUOI thanh dieu huong, khong phai giua ca slide.
+     Thanh dieu huong (84px) trong suot nhung van mang logo va menu, nen mat
+     coi khung bat dau tu mep duoi cua no: can giua ca slide thi do duoc 189 /
+     189 ma nhin thay chi con ~110 tren / ~190 duoi. Cong 84px vao dem tren de
+     hai khoang nhin thay bang nhau. */
+  padding-block:calc(clamp(88px,10vh,96px) + 84px) clamp(88px,10vh,96px);
+}
+/* `.page-slide` đã tự có min-height:100svh, chỉ thiếu điểm neo. Thiếu dòng này
+   thì khối viết theo lối page-slide bị cuộn lướt qua trên trang chủ. */
+.home-slides > .page-slide{ scroll-snap-align:start; scroll-snap-stop:always; }
+.home-slides > .cta-band{
+  scroll-snap-align:start;
+  /* a hard flick off the end of the hero must not sail past this slide */
+  scroll-snap-stop:always;
+  min-height:100svh;
+}
+/* Chan trang thap hon mot man hinh, nen no neo theo `end`: diem nghi la day
+   tai lieu, cho duy nhat luon voi toi duoc. Neo `start` se doi mot vi tri
+   cuon lon hon muc cuon toi da, tuc la mot diem khong bao gio den duoc, va
+   duoi mandatory thi khoang cuoi lai roi vao dung canh cu: khong co diem nghi
+   hop le nen bi keo ve dau CTA band.
+
+   Neo `end` tung bi bo di vi no keo nguoi doc xuong day ngay khi ho vua cuon
+   toi chan trang. Gio do la dieu mong muon: mot cu cuon di tron mot trang, va
+   trang cuoi cung la chan trang hien du. */
+html:has(.home-slides) .footer,
+html:has(.page-slides) .footer{
+  scroll-snap-align:end; scroll-snap-stop:always;
+}
+
+/* ==========================================================================
+   CONTACT
+   ========================================================================== */
+/* The yard photograph fills the section — see Contact in
+   components/sections/index.tsx. Same construction as .cta-band: the image
+   is a next/image `fill` behind the content, the veil is an ::before over it,
+   and the panel colour under both is what shows while the photo decodes.
+
+   `isolation:isolate` keeps the negative z-indexes inside this section, so
+   the image cannot slide behind the page ground and vanish.
+
+   The veil is heavier on the left, where the address and hotline copy sits,
+   and lighter on the right, which the form card covers anyway. Below 900px
+   the grid stacks and the copy crosses the whole width, so the gradient is
+   dropped there for an even veil — see the media query further down. */
+.contact{
+  position:relative; z-index:1; overflow:hidden; isolation:isolate;
+  background:var(--bg);
+}
+.contact__img{
+  object-fit:cover; object-position:50% 50%; z-index:-2; pointer-events:none;
+}
+.contact::before{
+  content:""; position:absolute; inset:0; z-index:-1; pointer-events:none;
+  background:
+    linear-gradient(to right, rgba(7,9,12,.72) 0%, rgba(7,9,12,.62) 46%, rgba(7,9,12,.34) 100%),
+    rgba(7,9,12,.55);
+}
+.contact__grid{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(36px,6vw,78px); align-items:start; }
+/* The trail rides in this section rather than in a band above it — see
+   Contact. Its own colours are set here because it sits over the
+   photograph, not over the flat page ground the band had. */
+.contact__trail{ margin-bottom:clamp(18px,2.6vh,30px); }
+.contact__trail .crumbs{ color:#b4bdc9; }
+.contact__trail .crumbs__sep{ color:#8e98a6; }
+
+.info{ margin-top:30px; }
+.info__row{ padding:18px 0; border-top:1px solid var(--line-2); }
+.info__label{
+  display:block; font-size:11px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--orange); font-weight:600; margin-bottom:7px;
+}
+.info__row p{ margin:0; color:#c3cbd6; font-size:15px; }
+.info__row a:hover{ color:var(--orange-2); }
+/* Số / email riêng của văn phòng, ngay dưới địa chỉ. */
+.info__row .info__sub{ display:flex; flex-wrap:wrap; gap:2px 22px; margin-top:4px; font-size:14px; }
+
+/* A white card, because the section behind it is now a photograph and a
+   translucent panel over a photo gives neither the copy nor the fields a
+   ground they can be trusted on. QuoteForm is only ever used here (see
+   Contact), so the light treatment lives on .form itself rather than in a
+   modifier nothing else would ever set.
+
+   Every colour below is measured against #fff: ink 15.98:1, label 7.48:1,
+   placeholder 4.61:1, consent 5.84:1, and the two note states 5.36:1 and
+   6.34:1 — the dark-panel values would have been 3.06:1 and 2.00:1 here. */
+.form{
+  --fm-ink:    #16232e;   /* same ink the light slides use */
+  --fm-label:  #47566a;
+  --fm-ph:     #6b7685;
+  --fm-line:   #91959a;   /* 3.01:1 on white — WCAG 1.4.11 for a field edge */
+  --fm-fill:   #f4f6f8;
+
+  background:#fff;
+  border:1px solid rgba(22,35,46,.10); border-radius:clamp(14px,1.4vw,20px);
+  box-shadow:0 24px 60px -24px rgba(0,0,0,.45);
+  padding:clamp(24px,3.4vw,38px);
+  display:flex; flex-direction:column; gap:16px;
+  color:var(--fm-ink);
+}
+.form__row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.form label{
+  display:flex; flex-direction:column; gap:8px;
+  font-size:13px; font-weight:600; color:var(--fm-label); letter-spacing:.03em;
+}
+.form input,.form select,.form textarea{
+  font:inherit; font-size:15px; font-weight:400; color:var(--fm-ink);
+  /* Filled rather than white-on-white: the fill is what says "field" at a
+     glance, and the border is what satisfies 1.4.11 up close. */
+  background:var(--fm-fill); border:1px solid var(--fm-line);
+  border-radius:var(--radius-sm); padding:13px 15px; outline:none;
+  transition:border-color .25s, box-shadow .25s;
+  width:100%;
+}
+.form textarea{ resize:vertical; min-height:110px; }
+.form input:focus,.form select:focus,.form textarea:focus{
+  border-color:var(--orange); box-shadow:0 0 0 3px rgba(var(--orange-rgb),.18);
+}
+/* A-02 — on the white card #76808e drops to 4.05:1, so the placeholder goes
+   a step darker. Measured 4.61:1. */
+.form input::placeholder,.form textarea::placeholder{ color:var(--fm-ph); }
+.form select option{ background:#fff; color:var(--fm-ink); }
+/* --orange is 3.06:1 on white, which is large-text only — the dark shade is
+   5.36:1 and this line is 14px. */
+.form__note{ margin:0; font-size:14px; color:var(--orange-dk); text-align:center; }
+.form input:invalid.is-touched{ border-color:#b32d1f; }
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+.footer{
+  position:relative; z-index:1; background:var(--ground);
+  border-top:1px solid var(--line-2); padding-top:clamp(50px,6vw,74px);
+}
+.footer__grid{
+  display:grid; grid-template-columns:1fr 1.15fr .9fr .9fr 1.7fr;
+  gap:clamp(24px,3vw,40px); padding-bottom:clamp(36px,5vw,56px);
+}
+.footer__brand a{ display:inline-block; }
+/* The horizontal lockup, so width is what we set and height follows the
+   artwork's own 2.12:1 ratio — pinning both would squash it. */
+.footer__logo{ width:100%; max-width:200px; height:auto; display:block; }
+.footer__col h4{
+  margin:0 0 22px; font-size:17px; font-weight:700; letter-spacing:.01em;
+  color:var(--txt);
+}
+.footer__col a, .footer__addr{
+  display:block; color:var(--txt-2); font-size:14px; line-height:1.5; padding:4px 0;
+  transition:color .25s;
+}
+.footer__col a:hover{ color:var(--orange-2); }
+.footer__row{ display:flex; align-items:flex-start; gap:12px; margin-bottom:8px; }
+/* Mỗi thành phố một cụm ở chân trang. Tên thành phố là cái neo cho mắt khi
+   lướt, nên nó to hơn dòng địa chỉ và mang màu nhấn — còn bản thân địa chỉ
+   vẫn giữ màu chữ phụ để cả khối không chói. */
+/* Cột Liên hệ: các nhóm (Trụ sở chính, Chi nhánh, Hotline, Email) xếp dọc,
+   nhãn nhỏ màu nhấn in một lần trên mỗi nhóm — cùng kiểu với trang Liên hệ. */
+.footer__group + .footer__group{ margin-top:12px; }
+.footer__groupLabel{
+  margin:0 0 2px; font-size:11px; font-weight:700; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--orange-2);
+}
+/* Gọn hơn các cột link: mỗi địa chỉ là một khối chữ, không phải một link cần
+   vùng bấm, nên bỏ padding dọc và khoảng cách giữa các dòng. */
+.footer__group .footer__row{ gap:10px; margin-bottom:4px; }
+.footer__group .footer__row:last-child{ margin-bottom:0; }
+.footer__group .footer__addr, .footer__group .footer__row a{ padding:1px 0; line-height:1.45; }
+.footer__group .footer__row svg{ width:15px; height:15px; margin-top:3px; }
+.footer__office{ min-width:0; }
+/* Số / email riêng của văn phòng: mỗi thứ một dòng nhỏ dưới địa chỉ. Cột hẹp
+   nên để chung một dòng thì email rớt xuống, kéo theo dấu ngăn lẻ ở đầu dòng. */
+.footer__officeContact{ display:grid; font-size:13px; }
+.footer__group .footer__officeContact a{ padding:0; }
+/* Biểu tượng nhỏ trước số / email riêng — cùng hình với hotline và email chung. */
+.footer__officeContact a, .info__sub a{ display:inline-flex; align-items:center; gap:6px; }
+.footer__group .footer__officeContact svg, .info__sub svg{
+  /* Cùng màu với biểu tượng 📍, hotline, email chung (var(--txt)) — không để
+     cái trắng cái xám. */
+  flex:none; width:13px; height:13px; margin:0; fill:var(--txt);
+}
+.footer__row svg{
+  flex:none; width:16px; height:16px; margin-top:7px; fill:var(--txt);
+}
+.footer__bar{
+  border-top:1px solid var(--line); padding:26px 0 30px;
+  display:flex; justify-content:flex-end; gap:16px; flex-wrap:wrap;
+  font-size:14px; color:var(--txt);
+}
+.footer__bar a:hover{ color:var(--orange-2); }
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width:1000px){
+  .why__grid{ grid-template-columns:repeat(2,1fr); }
+  .footer__grid{ grid-template-columns:1fr 1fr; }
+  .footer__brand{ grid-column:1 / -1; }
+  /* stacked: photograph on top, the figures under it */
+  .about-detail__grid{ grid-template-columns:1fr; gap:clamp(22px,3vh,34px); }
+  .about-detail__figure{ aspect-ratio:16/10; max-height:34svh; }
+  /* Smaller cells on a narrow screen, and fainter again — the same grid
+     density reads much heavier once the viewport shrinks around it.
+     (The K3c spec proposed 1023px; this is the breakpoint the site already
+     uses, so the backdrop turns over with everything else.) */
+  :root{
+    --hero-cell: 48px;
+    --hero-grid: rgba(255,255,255,.022);
+    --hero-dot:  rgba(255,255,255,.05);
+  }
+}
+
+/* The nav collapses earlier than the rest of the layout. Measured: with six
+   items plus the language switcher and the CTA it needs ~946px and stops
+   fitting a little under 1060px — well before the 860px the grids need. */
+@media (max-width:1060px){
+  .nav__links{
+    position:fixed; inset:0 0 auto 0; top:0; padding:96px 28px 34px;
+    background:rgba(7,9,12,.97); backdrop-filter:blur(18px);
+    flex-direction:column; gap:4px;
+    border-bottom:1px solid var(--line);
+    transform:translateY(-102%); transition:transform .45s var(--ease);
+    z-index:-1;
+  }
+  .nav.is-open .nav__links{ transform:none; }
+  .nav__links > a, .nav__trigger{ font-size:19px; padding:12px 0; border-bottom:1px solid var(--line-2); }
+  .nav__item{ display:block; }
+  .nav__trigger{ width:100%; justify-content:space-between; }
+  /* `.nav__links` in front: the base .nav__menu rules (absolute, a floating
+     panel) come later in the file with the same weight and used to win, so
+     in the drawer the list floated over the links below it instead of
+     opening in place between them. */
+  .nav__links .nav__menu{
+    position:static; min-width:0; margin:0 0 4px; padding:4px 0 10px;
+    background:none; border:0; box-shadow:none; backdrop-filter:none;
+  }
+  .nav__links .nav__menu a{ font-size:15px; padding:8px 0 8px 14px; }
+  .nav__burger{ display:flex; }
+  .nav__cta{ display:none; }
+
+}
+
+@media (max-width:860px){
+  .contact__grid,.fleet__grid{ grid-template-columns:1fr; }
+  /* stacked: the copy crosses the full width, so drop the left-heavy ramp */
+  .contact::before{ background:rgba(7,9,12,.80); }
+  .why__item + .why__item{ padding-left:0; }
+  .why__item{ padding-right:0; }
+}
+
+@media (max-width:620px){
+  .why__grid{ grid-template-columns:1fr; }
+  .form__row{ grid-template-columns:1fr; }
+  .footer__grid{ grid-template-columns:1fr; gap:26px; }
+  .footer__bar{ justify-content:center; text-align:center; }
+  /* squeezed so the whole slide still fits a phone screen in one piece */
+  .about-detail{ padding-block:clamp(22px,3.2vh,38px); }
+  .about-detail__figure{ aspect-ratio:16/9; }
+  .about-detail__lead{ font-size:15px; margin-bottom:clamp(18px,2.4vh,28px); }
+  .about-detail__facts{ margin-bottom:clamp(18px,2.4vh,28px); }
+  .fact{ padding:clamp(9px,1.3vh,15px) 0; }
+  /* taller on phones so the copy clears the truck, which sits at ~52% of the height */
+  .cta-band{ min-height:780px; }
+  /* two columns: drop the divider at the start of each row and rule between them */
+  /* keep the card off both edges once the screen is narrower than the ratio
+     would like — the height rule still sets the scale */
+  .svc-card{ max-width:78vw; }
+  /* As a home slide it is exactly one screen: every home section is one
+     slide, one swipe. The 780px floor above made it taller than a 640px
+     phone, and the slide took two swipes. The copy (~310px) still fits the
+     lower half of a 640px screen. */
+  .home-slides > .cta-band{ min-height:100svh; }
+  .fleet__list li{ flex-direction:column; align-items:flex-start; gap:5px; }
+  .hero__hint{ display:none; }
+}
+/* Phones: every home section is exactly one screen, and the fixed nav on top
+   and the call bar at the foot (54px, see .callbar) both sit over it — so
+   the content has to fit between them, not behind them. */
+@media (max-width:860px){
+  /* The copy takes the height it needs above the call bar; the photo gets
+     the rest. With the old two equal halves the button sat under the bar. */
+  .home-slides > .cta-band{
+    grid-template-rows:1fr auto;
+    padding-bottom:calc(54px + env(safe-area-inset-bottom));
+  }
+}
+@media (max-width:620px){
+  /* Clear the nav (~66px) and the call bar; the squeeze above had taken
+     the padding down under both. */
+  .about-detail{
+    padding-top:72px;
+    padding-bottom:calc(62px + env(safe-area-inset-bottom));
+  }
+  .about-detail__figure{ max-height:26svh; }
+  .cta-band p{ margin-bottom:24px; }
+}
+/* Short phones (≤ 720px tall): the photo, the statement and three figures do
+   not fit between the bars on one screen whatever the rhythm — measured
+   688px of content on a 640px screen. The words are the point of the slide,
+   so the photo goes and all of the text stays. */
+@media (max-width:620px) and (max-height:720px){
+  .about-detail__figure{ display:none; }
+}
+
+/* Reduced-motion fallback: the clips play through in order on their own */
+body.hero-fallback .hero__hud{ opacity:.85; }
+
+@media (prefers-reduced-motion:reduce){
+  html{ scroll-behavior:auto; }
+  .reveal{ opacity:1; transform:none; transition:none; }
+  /* the chosen card still lifts so it stands out, but without the motion */
+  .svc-card__inner, .svc-card__inner::before, .svc-card__inner::after,
+  .svc-face__img, .svc-face__cta, .svc-face__cta svg,
+  .svc-face__more, .svc-face__panel::before{ transition:none; }
+  .svc-card.is-active .svc-face__img, .svc-card:focus-within .svc-face__img{ transform:none; }
+  .marquee__track{ animation:none; }
+  .mouse i{ animation:none; }
+}
+
+/* ==========================================================================
+   ADDITIONS FOR THE MULTI-PAGE SITE
+   The static site was one page with anchor links; these cover what the router
+   brought with it — a language switcher, inner pages that start under the
+   fixed header instead of under a full-bleed hero, and the hero's call to
+   action (bee-hero-DEV-HANDOFF §3).
+   ========================================================================== */
+
+/* ---- language switcher ---- */
+/* ---- language switcher: the current flag, and the other one behind a caret ---- */
+.nav__lang{ position:relative; display:flex; align-items:center; }
+.nav__lang-btn{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:4px; border:0; background:none; cursor:pointer;
+  color:inherit; border-radius:99px;
+}
+.nav__lang-btn:focus-visible{ outline:2px solid var(--orange); outline-offset:2px; }
+.nav__flag{
+  display:block; width:clamp(24px,1.9vw,28px); aspect-ratio:1;
+  border-radius:50%; flex:none;
+}
+.nav__caret{
+  width:15px; height:15px; flex:none;
+  fill:none; stroke:currentColor; stroke-width:2.2;
+  stroke-linecap:round; stroke-linejoin:round;
+  opacity:.65; transition:transform .25s var(--ease);
+}
+.nav__lang-btn[aria-expanded='true'] .nav__caret{ transform:rotate(180deg); }
+
+.nav__lang-menu,
+.nav__menu{
+  position:absolute; top:calc(100% + 10px); z-index:1;
+  list-style:none; margin:0; padding:6px;
+  background:rgba(7,9,12,.96); backdrop-filter:blur(14px);
+  border:1px solid var(--line); border-radius:var(--radius-sm);
+  box-shadow:0 18px 44px -18px rgba(0,0,0,.7);
+}
+.nav__lang-menu{ right:0; min-width:150px; }
+.nav__lang-menu a,
+.nav__menu a{
+  display:flex; align-items:center; gap:10px;
+  padding:9px 10px; border-radius:8px;
+  font-size:14px; color:var(--txt-2);
+}
+.nav__lang-menu a:hover,
+.nav__menu a:hover{ background:rgba(255,255,255,.06); color:var(--txt); }
+.nav__lang-menu a[aria-current],
+.nav__menu a[aria-current]{ color:var(--orange-2); font-weight:600; }
+/* Whichever ground the bar is wearing, the pop-out wears it too. */
+.nav--light .nav__lang-menu,
+.nav--light .nav__menu{
+  background:rgba(255,255,255,.97);
+  border-color:rgba(22,35,46,.12);
+  box-shadow:0 18px 44px -20px rgba(22,35,46,.35);
+}
+.nav--light .nav__lang-menu a,
+.nav--light .nav__menu a{ color:rgba(22,35,46,.7); }
+.nav--light .nav__lang-menu a:hover,
+.nav--light .nav__menu a:hover{ background:rgba(22,35,46,.05); color:var(--nav-ink); }
+.nav--light .nav__lang-menu a[aria-current],
+.nav--light .nav__menu a[aria-current]{ color:var(--orange-dk); }
+
+/* ---- the services item: a trigger and the nine it opens ---- */
+.nav__item{ position:relative; display:flex; align-items:center; }
+.nav__trigger{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 0; border:0; background:none; cursor:pointer;
+  font-size:14.5px; font-weight:500; color:var(--txt-2);
+  transition:color .25s;
+}
+.nav__trigger:hover,
+.nav__trigger[aria-expanded='true'],
+.nav__trigger[aria-current]{ color:var(--txt); }
+.nav__trigger:focus-visible{ outline:2px solid var(--orange); outline-offset:3px; }
+.nav__trigger .nav__caret{ width:14px; height:14px; }
+.nav__trigger[aria-expanded='true'] .nav__caret{ transform:rotate(180deg); }
+.nav--light .nav__trigger{ color:rgba(22,35,46,.66); }
+.nav--light .nav__trigger:hover,
+.nav--light .nav__trigger[aria-expanded='true'],
+.nav--light .nav__trigger[aria-current]{ color:var(--nav-ink); }
+/* Nine service names need a column of their own rather than the width of the
+   word above them. */
+.nav__menu{ left:0; min-width:min(300px, 74vw); }
+
+/* ---- hero call to action ----
+   .hero__overlays is pointer-events:none so the captions never sit in front of
+   the page; the one interactive thing inside it has to opt back in. */
+.cap__cta{
+  pointer-events:auto;
+  margin-top:26px;
+}
+
+
+/* ==========================================================================
+   PAGE HERO
+   A photograph filling the screen, with the page's name and what it is about
+   held on the dark ground the photograph already carries along its bottom.
+   The image is placed the way the CTA band's is — covering from the centre,
+   over a panel colour sampled from the photo itself — but the copy sits on a
+   panel of its own rather than on the photograph, because how far down the
+   frame the subject falls depends on the shape of the screen.
+
+   Every service page opens with this, and so does the warehousing page, which
+   adds a row of figures between the copy and the rule.
+   ========================================================================== */
+.page-hero{
+  position:relative; z-index:1; overflow:hidden; isolation:isolate;
+  /* the colour of the photo's own ground */
+  background:var(--ground); color:#fff;
+  /* the photograph takes what is left; the copy sits in the row under it */
+  display:grid; grid-template-rows:1fr auto;
+  min-height:100svh;
+}
+/* Cover from the centre, as on the CTA band: the horizon sits two thirds down
+   the frame and a centred crop keeps it near there on any shape of screen. */
+.page-hero__img{
+  object-fit:cover; object-position:50% 50%; z-index:-2; pointer-events:none;
+}
+/* Narrow screens see a thin centre slice, which cuts the logo on the trailer in
+   half at the left edge. Only the truck shot needs this; the other heroes on
+   .page-hero are photographs with nothing to keep whole. */
+@media (max-width:620px){
+  .page-hero__img--truck{ object-position:30% 50%; }
+}
+.page-hero::before{
+  content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
+  /* The nav is fixed, transparent until the page scrolls, and lands here on
+     the brightest part of the sky. This is what its white text reads on. */
+  background:linear-gradient(to bottom, rgba(7,9,12,.58) 0%, rgba(7,9,12,0) 20%);
+}
+/* The ground the copy sits on. It begins clear so the photograph is crisp right
+   down to the wheels, and is solid a little way in — well before the first line
+   of type, so the copy holds however the frame crops. */
+.page-hero__panel{
+  grid-row:2;
+  /* Feedback 15/10/2026: the dark ground started too high and left a tall
+     empty band under the copy. It now turns solid further down, and the
+     panel's own bottom padding is shorter, so more of the photo shows. */
+  background:linear-gradient(to bottom,
+    rgba(28,28,28,0) 0%, rgba(28,28,28,.5) 22%,
+    rgba(28,28,28,.92) 46%, var(--ground) 62%);
+  padding-top:clamp(30px,6vh,80px);
+  padding-bottom:clamp(14px,2.5vh,32px);
+}
+/* Name on the left, what the service is for on the right, with the rule under
+   both — the comp sets them on one baseline rather than stacking them. */
+.page-hero__inner{
+  display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:clamp(20px,4.5vw,90px); align-items:start;
+  padding-bottom:clamp(22px,4.5vh,56px);
+  border-bottom:1px solid rgba(255,255,255,.3);
+}
+.page-hero__title{
+  margin:0; font-weight:700; letter-spacing:-.02em; line-height:1.14;
+  font-size:clamp(28px,3.4vw,54px);
+}
+.page-hero__lead{
+  margin:0; color:#c9cfd8; line-height:1.62;
+  font-size:clamp(14.5px,1.25vw,19px);
+}
+/* A page whose subtitle is a claim of its own puts it above the lead, in the
+   same column — see CrossBorderHero. */
+.page-hero__copy{ display:grid; gap:clamp(11px,2vh,22px); }
+.page-hero__kicker{
+  margin:0; color:#e4e9ef; line-height:1.5;
+  font-size:clamp(15px,1.35vw,21px);
+}
+
+
+/* ---- the dark slides ----
+   The slides after a page hero all sit on the same dark ground, so there is no
+   seam between them. This is the chrome they share; each section below adds
+   only its own layout. */
+.page-slide{
+  position:relative;
+  background:var(--ground); color:#fff;
+  display:grid; place-items:center;
+  min-height:100svh;
+  padding:clamp(48px,8vh,110px) 0;
+}
+.page-slide__title{
+  margin:0 0 clamp(22px,3.8vh,50px);
+  font-weight:700; letter-spacing:-.02em; line-height:1.14;
+  font-size:clamp(26px,3.1vw,50px);
+}
+/* Content plays in when the slide arrives — see components/InView.tsx for why
+   this is not a scroll-driven animation like .reveal. */
+.is-armed .page-slide__in{ opacity:0; }
+.is-armed.is-in .page-slide__in{
+  animation:slide-line-in .72s var(--ease) both;
+}
+.is-armed.is-in .page-slide__in--late{ animation-delay:.16s; }
+
+/* ---- what goes wrong without the service ---- */
+/* No width of its own: it is a .wrap, and a width here would be a later rule
+   of the same weight overriding the one that gives the page its gutters. */
+.service-problems__grid{
+  display:grid; grid-template-columns:minmax(0,.84fr) minmax(0,1fr);
+  gap:clamp(28px,5.5vw,92px); align-items:center;
+}
+/* Near enough square, as the comp has it, and capped so the slide still fits a
+   laptop screen in one piece. */
+/* The service's own photograph goes in here through next/image — see
+   ServiceProblems in components/sections/service.tsx. The flat ground stays as
+   what the frame holds behind it, so a service with no file still reads as a
+   plate rather than a hole. */
+.service-problems__figure{
+  position:relative; aspect-ratio:755/782; max-height:72svh;
+  border-radius:6px; overflow:hidden;
+  background:#22262c;
+}
+.service-problems__img{ object-fit:cover; }
+.service-problems__item + .service-problems__item{ margin-top:clamp(16px,2.8vh,34px); }
+/* The square bullet sits in the gutter both the name and its paragraph are
+   indented past, so the two read as one block hanging off it. */
+.service-problems__item dt{
+  position:relative; padding-left:clamp(22px,1.9vw,38px);
+  font-weight:700; line-height:1.34; letter-spacing:-.01em;
+  font-size:clamp(16px,1.45vw,23px);
+}
+.service-problems__item dt::before{
+  content:''; position:absolute; left:0; top:.44em;
+  width:clamp(9px,.7vw,13px); aspect-ratio:1;
+  background:var(--orange);
+}
+.service-problems__item dd{
+  margin:clamp(5px,.9vh,11px) 0 0 clamp(22px,1.9vw,38px);
+  color:#a9b1bc; line-height:1.6;
+  font-size:clamp(13.5px,1.05vw,17px);
+}
+
+
+/* ---- the three corridors the lanes group into ---- */
+.corridors{ padding-block:clamp(44px,7vh,110px); }
+.corridors__heading{
+  margin:0 0 clamp(28px,5vh,72px);
+  text-align:center; color:var(--light-ink);
+  font-weight:700; letter-spacing:-.025em; line-height:1.12;
+  font-size:clamp(26px,3.3vw,54px);
+}
+.corridors__grid{
+  list-style:none; margin:0; padding:0;
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:clamp(18px,2.4vw,38px); align-items:start;
+}
+/* The ground behind the photograph, and what shows while it decodes. */
+.corridors__figure{
+  position:relative; overflow:hidden;
+  aspect-ratio:3/2; max-height:40svh;
+  border-radius:clamp(8px,.8vw,14px);
+  background:#dfe3e8;
+  margin-bottom:clamp(14px,2.4vh,26px);
+}
+.corridors__img{ object-fit:cover; }
+.corridors__name{
+  margin:0 0 clamp(10px,1.8vh,20px);
+  color:var(--light-ink); font-weight:700; line-height:1.28; letter-spacing:-.01em;
+  font-size:clamp(16px,1.5vw,25px);
+}
+.corridors__body{
+  margin:0; color:rgba(22,35,46,.62); line-height:1.62;
+  font-size:clamp(13px,1.05vw,17px);
+}
+
+@media (max-width:900px){
+  /* One at a time: three of these side by side on a phone leaves each corridor
+     four words to a line. */
+  .corridors__grid{ grid-template-columns:1fr; gap:clamp(16px,2.4vh,28px); }
+  .corridors__figure{
+    aspect-ratio:2/1; max-height:20svh; margin-bottom:clamp(10px,1.6vh,18px);
+  }
+  .corridors__name{ margin-bottom:clamp(7px,1.2vh,14px); }
+}
+
+/* ---- the route network: the map beside the lanes it numbers ----
+   The map's frame takes the map's own proportions, so the image fills it
+   exactly — scaled to fit, with nothing cropped and no dead ground around it.
+   A square frame cannot do that with a landscape map: one or the other has to
+   give, and cropping a map costs it Myanmar on one side and Taiwan on the
+   other. The frame is as tall as the lane list beside it, and the lanes take
+   whatever width is left, which is less than half. */
+.border-routes__grid{
+  /* The map file's own proportions, and the height of the row the map shares
+     with the lanes. The height is in viewport units rather than a percentage:
+     the slide has a min-height, not a height, so a percentage has nothing
+     definite to resolve against. The cap stops a tall screen giving the map a
+     width that leaves the lanes a column too narrow for one. */
+  --map-ratio:1128 / 909;
+  --plate:min(calc(100svh - 2 * clamp(48px,8vh,110px)), 560px);
+
+  height:var(--plate);
+  /* The track is given its width outright. Left to size itself it took the map
+     file's own 1128px and swallowed the row. It may shrink below that on a
+     narrow screen, and the lanes keep a floor either way. */
+  display:grid;
+  grid-template-columns:
+    minmax(0, calc(var(--plate) * var(--map-ratio)))
+    minmax(340px, 1fr);
+  gap:clamp(16px,2vw,32px); align-items:stretch;
+}
+.border-routes__figure{
+  display:grid; aspect-ratio:var(--map-ratio);
+  width:100%; height:auto; align-self:center;
+}
+/* The plate carries its own light ground — see components/CrossBorderMap.tsx —
+   so on this dark slide it needs no border of ours. It is sized to the lane
+   list beside it and the map is set inside it, which is what the comp does:
+   matched instead to the map's own proportions the two columns come out
+   visibly uneven. */
+.border-routes__figure .mapfig{
+  margin:0; border:0; border-radius:clamp(8px,.9vw,14px);
+  display:grid;
+}
+.border-routes__figure .mapfig__plate{
+  background:#fff; padding:0;
+  display:grid; place-items:center;
+}
+.border-routes__figure .mapfig__img{
+  width:100%; height:100%; object-fit:contain;
+}
+
+/* Spread down the column, as the comp has them, with the marker carrying the
+   number and a square in the gutter beside it. */
+.border-routes__list{
+  --lane-gutter:clamp(22px,1.9vw,38px);
+
+  height:100%; margin:0;
+  padding:clamp(24px,2.1vw,42px) 0 clamp(24px,2.1vw,42px) var(--lane-gutter);
+  /* Inside, so the number is part of the line rather than drawn in the padding
+     the square occupies — outside, a two-digit marker reaches back over it. */
+  list-style:decimal inside;
+  /* TỐI ĐA hai cột, và mỗi cột ít nhất 260px.
+  
+     Hai con số chứ không phải `columns:2`, vì số cột đúng phụ thuộc vào chỗ
+     danh sách THẬT SỰ có, không phải bề ngang cửa sổ: ở bố cục rộng nó nằm
+     cạnh bản đồ và chỉ được ~500px — chia đôi thì mỗi cột 230px và tuyến dài
+     nhất xuống ba dòng. Khi bản đồ nhảy lên trên, danh sách chiếm trọn bề
+     ngang (700–1100px) và hai cột vừa vặn. Viết theo chiều rộng tối thiểu thì
+     CSS tự quyết, không cần một điểm ngắt nào phải đoán.
+
+     `columns` chứ không phải lưới hai cột: nó rót theo thứ tự đọc — 1..5 cột
+     trái, 6..10 cột phải — còn lưới `auto-flow: row` xếp 1,2 cạnh nhau, tức
+     số thứ tự chạy ngang, trái hẳn cách người ta dò một danh sách đánh số. */
+  columns:260px 2; column-gap:clamp(20px,2.4vw,46px);
+}
+/* `gap` không có tác dụng trong ngữ cảnh nhiều cột — khoảng cách dòng phải do
+   chính mục tạo ra. */
+.border-routes__list li{ break-inside:avoid; margin-bottom:clamp(6px,1.2vh,16px); }
+.border-routes__list li:last-child{ margin-bottom:0; }
+.border-routes__list li{
+  position:relative; color:#fff;
+  font-weight:700; line-height:1.28; letter-spacing:-.01em;
+  font-size:clamp(13.5px,1.45vw,20px);
+}
+.border-routes__list li::marker{ color:#fff; font-weight:700; }
+.border-routes__list li::before{
+  content:''; position:absolute; top:.46em;
+  left:calc(-1 * var(--lane-gutter));
+  width:clamp(8px,.68vw,13px); aspect-ratio:1;
+  background:var(--orange);
+}
+
+/* Stacked below this, not at the usual breakpoint: the map takes the width it
+   needs to stay legible, and under about 1150px what is left cannot hold the
+   longest lane on one line. */
+@media (max-width:1150px){
+  /* the map first, then the lanes it numbers */
+  .border-routes{ place-items:center; }
+  /* KHÔNG ép về một cột ở đây. Dưới ngưỡng này bản đồ nhảy lên trên và danh
+     sách chiếm trọn bề ngang trang — nó RỘNG HƠN lúc nằm cạnh bản đồ, nên hai
+     cột càng hợp. Chỉ màn điện thoại thật mới về một cột, ở khối dưới. */
+  .border-routes__grid{
+    height:auto; grid-template-columns:1fr; gap:clamp(18px,3vh,32px);
+    align-content:center;
+  }
+  /* Sized off its own width again, and capped: stacked on a 1024-wide screen
+     the full column gives the map 780px of height on its own, which is more
+     than the screen has for the whole slide.
+
+     Trần nâng từ 38svh lên 52svh sau khi danh sách chia hai cột: mười tuyến
+     xếp một cột chiếm gần 290px, hai cột chỉ còn 145px — chỗ vừa trống ra đó
+     trả cho bản đồ, thứ duy nhất trong khối này cần chỗ để đọc được tên
+     thành phố. Trần vẫn theo CHIỀU CAO màn hình, nên màn thấp không bị bản
+     đồ đẩy danh sách xuống dưới nếp gấp. */
+  .border-routes__figure{
+    /* The width is what carries the cap, not max-height: this is a grid box
+       whose only child is stretched to it, so with both dimensions auto it has
+       nothing to take an intrinsic size from and collapses to nothing. */
+    width:min(100%, calc(52svh * var(--map-ratio)));
+    height:auto;
+    justify-self:center;
+  }
+  .border-routes__list{
+    height:auto; align-content:start;
+    padding-block:0;
+  }
+}
+
+/* ---- why the company is worth trusting ---- */
+/* A light slide, but its content sits on an inset panel rather than straight on
+   the paper: the photograph lives inside that panel, washed almost out, so it
+   reads as a tint on the block rather than as a picture of anything. */
+/* The panel fills the slide rather than shrinking to its copy, and the three
+   points are spread down it — which is what gives the comp its air. Left to
+   their natural heights they bunch at the top of a tall screen. */
+.usps{ padding-block:clamp(40px,7vh,110px); place-items:stretch; }
+.usps__panel{
+  position:relative; isolation:isolate; overflow:hidden;
+  padding:clamp(26px,4.2vw,86px) clamp(22px,4vw,80px);
+  background:var(--light-bg);
+}
+/* Placed like every other background on the site: covering from the centre. */
+.usps__img{
+  object-fit:cover; object-position:50% 50%; z-index:-2;
+}
+/* The veil. Heaviest where the claim sits and thinnest across the middle, so
+   the containers come through as colour rather than as detail. */
+.usps__panel::before{
+  content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
+  /* Gần như bỏ hẳn (16/10/2026): file ảnh ĐÃ tự mờ sẵn — kênh alpha của nó
+     chỉ 23/255. Phủ thêm .84–.97 lên trên là xoá sạch, khối trông như nền
+     trắng trơn, trong khi Figma vẫn thấy container. Chỉ giữ một vệt nhẹ ở
+     góc tiêu đề. */
+  background:linear-gradient(114deg,
+    rgba(244,246,248,.35) 0%, rgba(244,246,248,0) 45%);
+}
+.usps__grid{
+  height:100%;
+  display:grid; grid-template-columns:minmax(0,.92fr) minmax(0,1fr);
+  gap:clamp(26px,4vw,80px); align-items:start;
+}
+.usps__title{
+  margin:0; color:var(--light-ink);
+  font-weight:700; letter-spacing:-.025em; line-height:1.14;
+  font-size:clamp(26px,3.3vw,54px);
+  max-width:14ch;
+}
+.usps__accent{ color:var(--orange); }
+
+.usps__list{
+  margin:0; height:100%;
+  display:grid; align-content:space-between; gap:clamp(20px,3.4vh,52px);
+}
+/* The point and what it buys, side by side — the comp reads them as two
+   columns rather than as a heading over a paragraph. */
+.usps__item{
+  display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:clamp(14px,2vw,44px); align-items:start;
+}
+.usps__item dt{
+  position:relative; padding-left:clamp(28px,2.3vw,44px);
+  color:var(--light-ink); font-weight:700; line-height:1.32;
+  letter-spacing:-.01em; font-size:clamp(15px,1.4vw,22px);
+}
+.usps__tick{
+  position:absolute; left:0; top:.06em;
+  width:clamp(19px,1.55vw,25px); height:auto; aspect-ratio:1;
+}
+.usps__tick circle{ fill:var(--orange); }
+.usps__tick path{
+  fill:none; stroke:#fff; stroke-width:2.4;
+  stroke-linecap:round; stroke-linejoin:round;
+}
+.usps__item dd{
+  margin:0; color:rgba(22,35,46,.6); line-height:1.6;
+  font-size:clamp(13px,1.05vw,16.5px);
+}
+
+@media (max-width:900px){
+  /* Stacked, and each point back over its own paragraph: two columns of this
+     on a phone leaves four or five words to a line in both of them. */
+  /* stacked, so nothing is being spread down a column any more */
+  .usps{ place-items:center; }
+  /* Squeezed: stacked, this slide carries a claim, six lines of infrastructure
+     and four points, which is a lot of screen on a phone. */
+  .usps{ padding-block:clamp(24px,4vh,60px); }
+  .usps__panel{ padding:clamp(18px,4vw,44px) clamp(16px,4vw,38px); }
+  .usps__claim{ gap:clamp(12px,2.2vh,24px); }
+  .usps__list{ gap:clamp(12px,2vh,22px); }
+  .usps__aside-list{ gap:clamp(4px,.8vh,9px); }
+  .usps__aside-title{ margin-bottom:clamp(7px,1.2vh,14px); }
+  .usps__grid{
+    height:auto; grid-template-columns:1fr; gap:clamp(18px,3vh,32px);
+  }
+  .usps__list{ height:auto; align-content:start; }
+  .usps__title{ max-width:none; }
+  .usps__item{ grid-template-columns:1fr; gap:clamp(5px,.9vh,10px); }
+  .usps__item dd{ padding-left:clamp(28px,2.3vw,44px); }
+  .usps__list{ gap:clamp(16px,2.8vh,30px); }
+}
+
+/* ---- the three warehouses, one at a time ---- */
+/* The statement on the left, the warehouse on the right, and the count of them
+   standing between the two — which is the middle of the screen, because the
+   two columns are even and the gap is what is left in the centre. */
+.warehouse-types__grid{
+  display:grid; align-items:center;
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  gap:clamp(20px,3.4vw,64px);
+}
+.warehouse-types__heading{
+  margin:0; font-weight:700; letter-spacing:-.02em; line-height:1.2;
+  font-size:clamp(26px,3.2vw,52px);
+  max-width:14ch;
+}
+
+/* the count: three dots, so it is clear there are three before anyone scrolls */
+.warehouse-types__dots{
+  list-style:none; margin:0; padding:0;
+  display:grid; gap:clamp(10px,1.4vh,18px); justify-items:center;
+}
+.warehouse-types__dots button{
+  display:block; padding:0; border:0; cursor:pointer;
+  width:clamp(8px,.62vw,11px); aspect-ratio:1; border-radius:50%;
+  background:rgba(255,255,255,.28);
+  transition:background .3s var(--ease), transform .3s var(--ease);
+}
+.warehouse-types__dots button:hover{ transform:scale(1.3); }
+.warehouse-types__dots button[aria-current]{
+  background:var(--orange); transform:scale(1.25);
+  box-shadow:0 0 0 4px rgba(var(--orange-rgb),.2);
+}
+.warehouse-types__dots button:focus-visible{
+  outline:2px solid var(--orange); outline-offset:4px;
+}
+
+.warehouse-types__card{ display:grid; }
+/* The ground behind the photograph, and what shows while it decodes. */
+.warehouse-types__figure{
+  position:relative; overflow:hidden;
+  aspect-ratio:4/3; max-height:46svh;
+  border-radius:clamp(10px,1vw,18px);
+  background:#20242b;
+  margin-bottom:clamp(18px,3vh,38px);
+}
+.warehouse-types__img{ object-fit:cover; }
+
+.warehouse-types__name{
+  margin:0 0 clamp(14px,2.4vh,26px);
+  color:var(--orange); font-weight:700; letter-spacing:-.01em; line-height:1.2;
+  font-size:clamp(19px,1.9vw,31px);
+}
+/* Label and value on one row, the labels in a column of their own so the values
+   line up down the card however long a label runs. */
+.warehouse-types__specs{ margin:0; }
+.warehouse-types__spec{
+  display:grid; grid-template-columns:minmax(0,.42fr) minmax(0,1fr);
+  gap:clamp(12px,1.6vw,30px);
+  padding:clamp(6px,1.1vh,13px) 0;
+}
+.warehouse-types__spec dt{
+  color:rgba(255,255,255,.5); line-height:1.45;
+  font-size:clamp(12.5px,1vw,16px);
+}
+.warehouse-types__spec dd{
+  margin:0; color:#fff; font-weight:600; line-height:1.45;
+  font-size:clamp(12.5px,1vw,16px);
+}
+
+/* Replaced under the reader on every change, so it plays in rather than cutting. */
+.warehouse-types__figure,
+.warehouse-types__name,
+.warehouse-types__specs{ animation:slide-line-in .5s var(--ease) both; }
+.warehouse-types__name{ animation-delay:.06s; }
+.warehouse-types__specs{ animation-delay:.12s; }
+
+@media (prefers-reduced-motion:reduce){
+  .warehouse-types__figure,
+  .warehouse-types__name,
+  .warehouse-types__specs{ animation:none; }
+}
+
+@media (max-width:900px){
+  /* Stacked: the heading, then the count turned on its side under it, then the
+     warehouse. Three columns of this on a phone leaves nothing for any of them. */
+  .warehouse-types__grid{
+    grid-template-columns:1fr; gap:clamp(14px,2.4vh,26px);
+    align-content:center;
+  }
+  .warehouse-types__heading{ max-width:none; }
+  .warehouse-types__dots{
+    grid-auto-flow:column; justify-content:start;
+    gap:clamp(9px,2.4vw,14px);
+  }
+  .warehouse-types__figure{ aspect-ratio:16/9; max-height:26svh; }
+}
+
+
+/* ---- moved in from the section that used to follow the slides ---- */
+/* The headline claim, now leading the three warehouses it is a claim about. */
+.warehouse-types__intro{ display:grid; gap:clamp(14px,2.4vh,28px); }
+.warehouse-types__lead{
+  margin:0; color:rgba(255,255,255,.62); line-height:1.55;
+  font-size:clamp(14px,1.2vw,19px);
+  max-width:24ch;
+}
+.warehouse-types__accent{ color:var(--orange); font-weight:600; }
+
+/* The yard's own fittings, under the claim they are the evidence for. The left
+   column of that slide was a heading and then a lot of nothing. */
+.usps__claim{ display:grid; gap:clamp(20px,4vh,52px); align-content:start; }
+.usps__aside-title{
+  margin:0 0 clamp(10px,1.8vh,20px);
+  color:var(--light-ink); font-weight:700; line-height:1.3;
+  font-size:clamp(15px,1.25vw,20px);
+}
+.usps__aside-list{
+  list-style:none; margin:0; padding:0;
+  display:grid; gap:clamp(6px,1.1vh,13px);
+}
+.usps__aside-list li{
+  position:relative; padding-left:clamp(16px,1.3vw,24px);
+  color:rgba(22,35,46,.66); line-height:1.5;
+  font-size:clamp(12.5px,1vw,16px);
+}
+/* the square bullet the comp uses, in brand orange */
+.usps__aside-list li::before{
+  content:''; position:absolute; left:0; top:.52em;
+  width:clamp(6px,.5vw,8px); aspect-ratio:1;
+  background:var(--orange);
+}
+
+/* ---- how the work is run: one step at a time, the truck walking the road ----
+   A light slide, so it takes .slide-light's ground and grid and only lays its
+   own three rows over them: the heading, the step held in the middle, and the
+   road along the bottom. */
+.service-process{
+  grid-template-rows:auto 1fr auto; place-items:stretch;
+  /* The heading is up to 56px and the road carries a truck standing on a
+     rule, so neither end can sit as close to the screen edge as an
+     ordinary slide's copy does. */
+  padding:clamp(96px,16vh,190px) 0 clamp(72px,9vh,120px);
+  text-align:center;
+}
+/* the mark from the comp, cut by the right edge of the screen */
+.service-process::after{
+  content:''; position:absolute; right:0; top:50%; transform:translateY(-50%);
+  height:clamp(230px,54vh,540px); width:clamp(88px,12.5vw,240px);
+  background:url('/img/ic-service-detail-process-bg.png') left center / auto 100% no-repeat;
+  pointer-events:none;
+}
+.service-process__heading{
+  position:relative; margin:0;
+  font-weight:700; letter-spacing:-.02em; line-height:1.1;
+  font-size:clamp(26px,3.4vw,56px);
+  color:var(--orange);
+}
+/* The comp warms the heading from left to right. Behind a support query
+   because the fallback for an unsupported clip is invisible text. */
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  .service-process__heading{
+    background-image:linear-gradient(100deg,var(--orange-dk),var(--orange) 40%,var(--orange-2));
+    -webkit-background-clip:text; background-clip:text;
+    color:transparent;
+  }
+}
+
+.service-process__step{
+  position:relative; place-self:center;
+  display:grid; gap:clamp(14px,2.6vh,30px);
+}
+.service-process__name{
+  margin:0; color:var(--light-ink);
+  font-weight:700; letter-spacing:-.02em; line-height:1.24;
+  font-size:clamp(23px,3.1vw,50px);
+  max-width:20ch; justify-self:center;
+}
+.service-process__body{
+  margin:0; color:rgba(22,35,46,.62); line-height:1.62;
+  font-size:clamp(14px,1.2vw,20px);
+  max-width:62ch; justify-self:center;
+}
+/* Replaced under the reader on every step, so it plays in rather than cutting. */
+.service-process__name,
+.service-process__body{ animation:slide-line-in .5s var(--ease) both; }
+.service-process__body{ animation-delay:.07s; }
+
+/* ---- the road ---- */
+.service-process__track{
+  position:relative;
+  width:min(100% - 40px, var(--wrap)); margin-inline:auto;
+  padding-bottom:clamp(16px,2.6vh,34px);
+}
+.service-process__road{
+  /* Shared by the truck, by the dots, which are spaced across its travel, and
+     by the line behind it, which is drawn as far as it has come.
+
+     Theo Figma (16/10/2026): con đường là MỘT DẢI có vạch liền ở mép trên và
+     mép dưới, vạch chấm chạy giữa dải; xe dài khoảng một phần tư con đường và
+     chạy trong dải, đầu xe nhô quá mép trên một chút. Tỉ lệ đo từ bản Figma:
+     dải cao ≈ 0,175 chiều dài xe, gầm xe cách mép dưới ≈ 1/4 bề cao dải. */
+  /* Tối đa 160px (16/10/2026): to hơn là phóng ảnh xe gốc 319px quá cỡ
+     màn hình độ phân giải gấp đôi — xe nhoè, và trông quá to so với khối. */
+  --truck-w:clamp(80px,11vw,160px);
+  --band:calc(var(--truck-w) * .3);
+
+  position:relative;
+  height:var(--band);
+  border-block:1px solid rgba(22,35,46,.16);
+}
+/* One stop per step, spread across the truck's travel rather than across the
+   road, so a dot is exactly where the truck comes to rest — including at the
+   two ends, where the truck is against the edge and its centre is half its own
+   length in. Spacing the dots evenly across the whole road instead is what the
+   comp looks like at desktop proportions, and it is the same thing there: the
+   truck is almost exactly one stop wide. It stops being the same thing on a
+   phone, where a truck that size would be too small to read and one that is
+   readable hangs off the screen. */
+.service-process__dots{
+  position:absolute; left:0; right:0; top:50%; height:0;
+  list-style:none; margin:0; padding:0;
+}
+/* The road ahead, and behind it the part already driven: solid, heavier and in
+   the darker brand red, drawn to wherever the truck has got to. */
+.service-process__dots::before{
+  content:''; position:absolute; left:0; right:0; top:0;
+  border-top:2px dashed rgba(22,35,46,.2);
+}
+.service-process__dots::after{
+  content:''; position:absolute; left:0; top:0;
+  /* Tới ĐUÔI xe chứ không tới giữa thân: xe giờ to và chạy trong dải
+     đường, vạch tới giữa thân sẽ lộ dưới gầm rơ-moóc ngay ở bước đầu. */
+  width:calc(var(--at, 0) * (100% - var(--truck-w)) / max(1, var(--steps, 1) - 1));
+  border-top:3px solid var(--orange-dk);
+  transition:width .72s var(--ease);
+}
+/* Above the line behind them, which would otherwise be drawn straight through. */
+.service-process__dots li{
+  position:absolute; top:0; z-index:1;
+  left:calc(
+    var(--truck-w) / 2
+    + var(--i, 0) * (100% - var(--truck-w)) / max(1, var(--steps, 1) - 1)
+  );
+}
+.service-process__dots button{
+  display:block; padding:0; border:0; cursor:pointer;
+  width:clamp(10px,.85vw,15px); aspect-ratio:1;
+  border-radius:50%; background:var(--orange);
+  transform:translate(-50%,-50%);
+  transition:transform .3s var(--ease), box-shadow .3s var(--ease);
+}
+.service-process__dots button:hover{ transform:translate(-50%,-50%) scale(1.25); }
+.service-process__dots button[aria-current]{
+  box-shadow:0 0 0 4px rgba(var(--orange-rgb),.22);
+  /* Xe đang đỗ ngay trên chấm này — Figma không vẽ chấm lộ dưới gầm xe. */
+  opacity:0;
+}
+.service-process__dots button:focus-visible{
+  outline:2px solid var(--orange); outline-offset:4px;
+}
+
+/* Spans the road so the share it is moved by is a share of the road, not of
+   itself — a percentage translate is otherwise measured against the truck.
+   Its travel is the road less its own length, so at the last stop it is
+   against the right edge rather than half hanging off it. */
+.service-process__truck{
+  position:absolute; left:0; right:0; bottom:calc(var(--band) * .24);
+  z-index:2;
+  transform:translateX(calc(
+    var(--at, 0) * (100% - var(--truck-w)) / max(1, var(--steps, 1) - 1)
+  ));
+  transition:transform .72s var(--ease);
+  pointer-events:none;
+}
+.service-process__truck span{
+  display:block; position:relative;
+  width:var(--truck-w); aspect-ratio:319/68;
+}
+/* Bám mép trái và đáy, y như ảnh nền 'left bottom / contain' trước đây: ảnh
+   thay vào lệch tỷ lệ thì bánh xe vẫn đứng trên vạch. */
+.service-process__truck span img{ object-fit:contain; object-position:left bottom; }
+
+@media (prefers-reduced-motion:reduce){
+  .service-process__truck,
+  .service-process__dots::after{ transition:none; }
+  .service-process__name,
+  .service-process__body{ animation:none; }
+}
+
+@media (max-width:620px){
+  .service-process{ padding-block:clamp(40px,7vh,80px) clamp(18px,2.6vh,34px); }
+  .service-process__name{ max-width:none; }
+}
+
+@media (max-width:900px){
+  /* stacked, photograph first — it is the thing that says which service this is */
+  .service-problems__grid{
+    grid-template-columns:1fr; gap:clamp(22px,3.4vh,36px);
+  }
+  .service-problems__figure{ aspect-ratio:16/10; max-height:32svh; }
+}
+
+@media (max-width:620px){
+  /* Squeezed so the slide is still one screen on a phone: three problems, each
+     a name and a paragraph, is a lot to hold beside a photograph. */
+  .page-slide{ padding-block:clamp(26px,4.4vh,62px); }
+  .service-problems__grid{ gap:clamp(16px,2.6vh,28px); }
+  .service-problems__figure{ aspect-ratio:16/9; max-height:25svh; }
+  .page-slide__title{ margin-bottom:clamp(14px,2.4vh,24px); }
+  .service-problems__item + .service-problems__item{ margin-top:clamp(12px,2vh,24px); }
+}
+
+
+/* ---- warehousing: the same hero, with the headline figures on glass ---- */
+/* The copy row keeps the hero's rule; the figures sit between them, so the rule
+   moves down to the stats and the copy row gives it up. */
+.warehouse-hero__head{
+  padding-bottom:clamp(22px,4vh,52px);
+  border-bottom:0;
+}
+.warehouse-hero__stats{
+  margin:0; padding-bottom:clamp(30px,6vh,80px);
+  border-bottom:1px solid rgba(255,255,255,.3);
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:clamp(10px,1.3vw,24px);
+}
+/* Glass: a translucent pane that lets the yard through blurred, lit from the
+   top-left by a gradient rather than a flat fill, and rimmed with a hairline.
+   The fallback where there is no backdrop-filter is below — without it the
+   pane is a barely-there wash and the labels lose their ground. */
+.warehouse-hero__stat{
+  position:relative; overflow:hidden;
+  border-radius:clamp(12px,1.15vw,20px);
+  padding:clamp(14px,1.9vh,28px) clamp(10px,1.2vw,22px);
+  text-align:center;
+  background:linear-gradient(150deg,
+    rgba(255,255,255,.16), rgba(255,255,255,.05) 44%, rgba(255,255,255,.09));
+  border:1px solid rgba(255,255,255,.18);
+  -webkit-backdrop-filter:blur(16px) saturate(1.3);
+  backdrop-filter:blur(16px) saturate(1.3);
+}
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  .warehouse-hero__stat{ background:rgba(18,20,24,.62); }
+}
+.warehouse-hero__stat dt{
+  font-weight:700; line-height:1.05; letter-spacing:-.02em;
+  font-size:clamp(24px,2.9vw,48px);
+  color:var(--orange);
+  font-variant-numeric:tabular-nums;
+}
+.warehouse-hero__stat dd{
+  margin:clamp(6px,1.1vh,14px) 0 0;
+  color:#c9cfd8; line-height:1.4;
+  font-size:clamp(11.5px,.95vw,15px);
+}
+
+@media (max-width:860px){
+  /* two by two: four of these across a phone leaves no room for the labels */
+  .warehouse-hero__stats{ grid-template-columns:repeat(2,1fr); }
+}
+
+@media (max-width:860px){
+  /* stacked, and the rule pulled in closer — the two no longer sit side by
+     side to be measured against each other */
+  .page-hero__inner{
+    grid-template-columns:1fr; gap:clamp(12px,2.4vh,22px);
+    padding-bottom:clamp(26px,5vh,60px);
+  }
+}
+
+
+/* ==========================================================================
+   PAGE SLIDES
+   The inner pages that are built as decks snap from slide to slide the way the
+   home page does — see the HOME SLIDES block for the reasoning, which is the
+   same here.
+
+   The one section that is not a slide is the detail block carrying the parts
+   that have not been drawn as slides yet. It is taller than the viewport, and
+   a snap area larger than the snapport may rest anywhere that still fills it,
+   so it scrolls normally and only bites at its top.
+   ========================================================================== */
+/* `mandatory` — xem giai thich o khoi HOME SLIDES. */
+html:has(.page-slides){ scroll-snap-type:y mandatory; }
+.page-slides > .page-hero,
+.page-slides > .page-slide,
+.page-slides > .slide-light{
+  scroll-snap-align:start; scroll-snap-stop:always;
+  min-height:100svh;
+}
+.page-slides > .section{ scroll-snap-align:start; }
+.page-slides > .cta-band{
+  scroll-snap-align:start; scroll-snap-stop:always;
+  min-height:100svh;
+}
+/* Not a slide, and end-aligned so it can still be reached — see the same rule
+   under HOME SLIDES for why. */
+/* Khong neo — xem giai thich o khoi HOME SLIDES. */
+
+/* ---- inner pages ----
+   No hero to sit under, so the first section needs to clear the fixed header
+   on its own. */
+.page > .section:first-child{ padding-top:calc(clamp(72px,9vw,130px) + 64px); }
+.page > .section:first-child .sec-head{ text-align:center; }
+
+@media (max-width:1060px){
+  /* The switcher sits outside the link drawer, so it stays reachable with the
+     drawer shut — it only needs to make room for the burger. */
+  .nav__lang{ margin-left:auto; }
+}
+
+/* ==========================================================================
+   CAPABILITY SECTIONS
+   Warehousing, cross-border, tracking, lifting and customs. These are figure-
+   heavy rather than prose-heavy, so they lean on spec tables, lane lists and
+   pills instead of the card grid the rest of the site uses.
+   ========================================================================== */
+
+.h3{
+  font-size:clamp(19px,2.2vw,26px);
+  line-height:1.2; font-weight:700; letter-spacing:-.01em;
+  margin:0;
+}
+.sec-sub{ margin:clamp(46px,5vw,72px) 0 clamp(22px,2.4vw,30px); }
+.note{ color:var(--txt-3); font-size:14px; margin:16px 0 0; max-width:70ch; }
+@media (max-width:760px){ }
+
+/* ---- pills: short factual chips, not links ---- */
+.pill-row{ display:flex; flex-wrap:wrap; gap:10px; }
+.pill{
+  padding:9px 18px; border-radius:999px;
+  border:1px solid rgba(var(--orange-rgb),.35);
+  background:rgba(var(--orange-rgb),.08);
+  color:var(--txt); font-size:14px; font-weight:500;
+}
+
+/* ---- ticked list ---- */
+.tick-list{ list-style:none; margin:0; padding:0; display:grid; gap:12px; }
+.tick-list li{
+  position:relative; padding-left:28px; color:var(--txt-2);
+}
+.tick-list li::before{
+  content:''; position:absolute; left:4px; top:.62em;
+  width:8px; height:8px; border-radius:2px;
+  background:linear-gradient(140deg,var(--orange),var(--amber));
+}
+
+/* ---- customs: licence number and the clearance commitments ---- */
+.licence{
+  display:inline-block; margin:22px 0 0;
+  padding:11px 22px; border-radius:999px;
+  border:1px solid var(--line); background:rgba(255,255,255,.03);
+  color:var(--txt-2); font-size:14px;
+}
+.licence strong{ color:var(--amber-2); letter-spacing:.02em; }
+
+.sla-row{ display:grid; gap:clamp(14px,1.6vw,20px); grid-template-columns:repeat(2,1fr); }
+.sla{
+  padding:clamp(22px,2.4vw,30px);
+  background:linear-gradient(165deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
+  border:1px solid var(--line); border-radius:var(--radius);
+}
+.sla b{
+  display:block; font-size:clamp(22px,2.8vw,32px); font-weight:700;
+  letter-spacing:-.02em; margin-bottom:8px;
+  background:linear-gradient(100deg,var(--orange),var(--amber));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.sla span{ color:var(--txt-2); font-size:14.5px; }
+@media (max-width:760px){ .sla-row{ grid-template-columns:1fr; } }
+
+/* ---- the why grid is reused at other column counts here ---- */
+.why__grid--3{ grid-template-columns:repeat(3,1fr); }
+.why__grid--2{ grid-template-columns:repeat(2,1fr); }
+@media (max-width:1000px){
+  .why__grid--3, .why__grid--2{ grid-template-columns:1fr; }
+}
+
+/* Six nav items plus a language switcher and the CTA is more than the original
+   four fitted comfortably. Between the burger breakpoint and a roomy desktop,
+   tighten the row rather than hiding it — a tablet can still show the full nav,
+   it just needs less air. */
+/* Only while the nav is still a horizontal row — below 1060px it becomes the
+   vertical menu, which sets its own larger type. Without the lower bound this
+   block would come later in the cascade and shrink that menu back down. */
+@media (max-width:1150px) and (min-width:1061px){
+  .nav__links{ gap:16px; }
+  .nav__links a{ font-size:13.5px; }
+}
+
+/* ---- header type, +3.5px ----
+   Every size in the bar stepped up together, so the wordmark, the links, the
+   dropdown and the button keep the relationship they were drawn with.
+
+   One block, and it sits after everything else that sets header type on
+   purpose: the base rules for .nav__trigger and .nav__menu a are declared
+   further up the file but *later* than the ≤1060px media query, so anything
+   written inside that query loses to them. Putting the increase here instead
+   of editing five scattered rules is what keeps it out of that trap.
+
+   `min-width:1061px` because below it the bar becomes the vertical drawer,
+   which sets its own larger type and must not be touched. */
+@media (min-width:1061px){
+  .nav__brandtext{ font-size:19.5px; }
+  .nav__brandtext em{ font-size:12.5px; }
+  .nav__links a{ font-size:18px; }
+  .nav__trigger{ font-size:18px; }
+  .nav__menu a{ font-size:17.5px; }
+  .nav__cta{ font-size:17.5px; }
+}
+
+/* The 1061–1150 tier was already a step down so the row would fit; it keeps
+   that step, moved up by the same 3.5px. */
+@media (min-width:1061px) and (max-width:1150px){
+  .nav__links a{ font-size:17px; }
+}
+
+/* A nav label that breaks across two lines looks like a bug. Let the row
+   overflow instead — the burger breakpoint below is set so it never has to. */
+.nav__links > a, .nav__lang-menu a, .nav__cta{ white-space:nowrap; }
+
+/* ---- route map inset ----
+   The source PNG is transparent and its labels outside the landmass are dark
+   text, so it needs a light plate to sit on. Presented as a deliberate map
+   inset rather than repainting someone else's cartography. */
+.mapfig{
+  margin:clamp(34px,4vw,52px) 0 0;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  overflow:hidden;
+  background:rgba(255,255,255,.03);
+}
+/* Caption strip on the dark side of the rule, so the plate below reads as a
+   figure the page is showing rather than a hole punched in it. */
+.mapfig__cap{
+  display:grid; gap:5px;
+  padding:clamp(14px,1.8vw,20px) clamp(16px,2vw,24px);
+  border-bottom:1px solid var(--line);
+}
+.mapfig__title{
+  font-size:12px; font-weight:600; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--orange-2);
+}
+.mapfig__note{ font-size:13.5px; color:var(--txt-2); }
+.mapfig__plate{
+  /* Warm off-white rather than a cold bright rectangle — closer to the map’s
+     own grey landmass, so the join reads as one object. */
+  background:#eeefec;
+  padding:clamp(12px,1.8vw,22px);
+}
+.mapfig__img{ display:block; width:100%; height:auto; }
+
+/* ---- trang chi tiết dịch vụ ---- */
+/* Phạm vi dịch vụ, Câu hỏi thường gặp và khối năng lực đi kèm (vd Giám sát
+   hành trình) là slide cao một màn như mọi slide khác của trang dịch vụ, nội
+   dung căn giữa. Chọn theo vị trí SAU .service-detail để khối năng lực ở
+   trang Năng lực không đổi. */
+.page-slides > .service-detail,
+.page-slides > .service-detail ~ .section{
+  min-height:100svh; scroll-snap-stop:always;
+  display:flex; flex-direction:column; justify-content:center;
+  /* Khoảng đệm của .page-slide, không phải của .section (tới 130px). */
+  padding-block:clamp(48px,8vh,110px);
+}
+.page-slides > .service-detail .sec-sub:first-child{ margin-top:0; }
+.service-detail .tick-list--2{ grid-template-columns:repeat(2,1fr); column-gap:36px; }
+@media (max-width:760px){ .service-detail .tick-list--2{ grid-template-columns:1fr; } }
+
+/* ---- Câu hỏi thường gặp ---- */
+.faq{ margin:0; display:grid; gap:0; }
+.faq__row{
+  padding:clamp(20px,2.2vw,26px) 0;
+  border-top:1px solid var(--line-2);
+}
+.faq__row:last-child{ border-bottom:1px solid var(--line-2); }
+.faq dt{
+  font-weight:600; font-size:clamp(16px,1.7vw,18px);
+  margin-bottom:10px; color:var(--txt);
+}
+.faq dd{ margin:0; color:var(--txt-2); max-width:78ch; }
+
+/* ---- breadcrumb ---- */
+.crumbs{
+  display:flex; flex-wrap:wrap; align-items:center; gap:9px;
+  margin-bottom:clamp(26px,3vw,38px);
+  font-size:13px; color:var(--txt-3);
+}
+.crumbs a{ color:var(--txt-3); transition:color .25s; }
+.crumbs a:hover{ color:var(--orange-2); }
+.crumbs [aria-current]{ color:var(--txt-2); }
+
+/* ==========================================================================
+   A-03 · A-12 · C-02 · C-04 — trợ năng, hành động nhanh, poster, pháp lý
+   ========================================================================== */
+
+/* ---- skip link (A-03) ---- */
+.skip{
+  position:fixed; top:10px; left:10px; z-index:300;
+  transform:translateY(-160%);
+  padding:12px 20px; border-radius:8px;
+  background:var(--orange); color:#1c0b00;
+  font-weight:700; font-size:14.5px;
+  transition:transform .2s var(--ease);
+}
+.skip:focus{ transform:none; outline:2px solid #fff; outline-offset:2px; }
+
+/* ---- hero poster (C-04) ----
+   Sits above the video stage and below the captions, so the headline in the
+   overlays is what a reader sees once the clips take over. */
+/* Above every other layer in the hero — the captions (2), the HUD and the
+   hint (3). While the clips are loading this is the only thing on screen, so
+   the headline is not painted twice and the two progress indicators do not
+   collide. When it fades, everything underneath is revealed at once. */
+.poster{
+  position:absolute; inset:0; z-index:4;
+  display:grid; grid-template-rows:1fr auto;
+  transition:opacity .7s var(--ease), visibility .7s;
+}
+.poster.is-done{ opacity:0; visibility:hidden; }
+.poster__img{
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover;
+}
+.poster__scrim{
+  position:absolute; inset:0;
+  background:
+    radial-gradient(58% 46% at 50% 46%, rgba(3,5,8,.66) 0%, rgba(3,5,8,.34) 55%, transparent 78%),
+    linear-gradient(to bottom, rgba(7,9,12,.72) 0%, rgba(7,9,12,.20) 30%, rgba(7,9,12,.94) 100%);
+}
+.poster__copy{
+  position:relative; align-self:center; justify-self:center;
+  text-align:center; padding:0 clamp(20px,5vw,60px);
+  max-width:min(94vw,1000px);
+}
+.poster__title{
+  margin:0;
+  font-size:clamp(34px,7.4vw,92px);
+  line-height:1.02; font-weight:700; letter-spacing:-.03em;
+  text-shadow:0 6px 40px rgba(0,0,0,.65);
+}
+.poster__title span{
+  background:linear-gradient(100deg,var(--orange),var(--amber) 52%,#fff);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.poster__sub{
+  margin:18px auto 0; max-width:640px;
+  font-size:clamp(14px,1.7vw,20px); color:#cfd6e0;
+  text-shadow:0 2px 18px rgba(0,0,0,.7);
+}
+
+/* Loading indicator lives at the foot, so it reports progress without ever
+   covering the picture or the headline. */
+.poster__foot{
+  position:relative;
+  padding:0 clamp(20px,5vw,60px) clamp(20px,4vh,36px);
+  display:grid; gap:10px;
+}
+.poster__bar{ height:2px; background:rgba(255,255,255,.14); border-radius:2px; overflow:hidden; }
+.poster__bar i{
+  display:block; height:100%; width:0%;
+  background:linear-gradient(90deg,var(--orange-dk),var(--orange),var(--amber));
+  transition:width .3s var(--ease);
+}
+.poster__status{
+  margin:0; display:flex; justify-content:space-between; gap:16px;
+  font-size:12px; letter-spacing:.06em; color:var(--txt-2);
+}
+.poster__pct{ font-variant-numeric:tabular-nums; color:var(--orange-2); }
+
+/* ---- mobile action bar (A-12) ---- */
+.callbar{ display:none; }
+@media (max-width:860px){
+  .callbar{
+    position:fixed; left:0; right:0; bottom:0; z-index:150;
+    display:grid; grid-template-columns:1fr 1fr; gap:1px;
+    background:var(--line);
+    border-top:1px solid var(--line);
+    backdrop-filter:blur(14px);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .callbar__btn{
+    display:flex; align-items:center; justify-content:center; gap:9px;
+    min-height:54px;                 /* WCAG 2.5.5 — vượt mức tối thiểu 44px */
+    font-weight:600; font-size:15px;
+  }
+  .callbar__btn--call{ background:rgba(7,9,12,.94); color:var(--txt); }
+  .callbar__btn--quote{
+    background:linear-gradient(100deg,var(--orange),var(--amber));
+    color:#1c0b00;
+  }
+  .callbar__icon{
+    width:15px; height:15px; flex:none;
+    background:currentColor;
+    /* handset glyph, drawn rather than loaded */
+    clip-path:path('M4.6 1.2 6.4 4.3 4.9 5.8a9 9 0 0 0 4.3 4.3l1.5-1.5 3.1 1.8-.5 2.6c-.2.7-.9 1.1-1.6 1A13.4 13.4 0 0 1 1.3 3.2c-.1-.7.3-1.4 1-1.6z');
+  }
+  /* the bar covers the last strip of the page */
+  .footer__bar{ padding-bottom:calc(20px + 54px + env(safe-area-inset-bottom)); }
+}
+
+/* ---- form states (A-10 · A-11 · C-02) ---- */
+.hp{
+  position:absolute; width:1px; height:1px;
+  overflow:hidden; clip-path:inset(50%); white-space:nowrap;
+}
+.field__err{
+  display:block; margin-top:6px;
+  font-size:13px; font-weight:500; color:#ff9d92;
+  letter-spacing:0; text-transform:none;
+}
+/* #ff9d92 was for a dark panel; on white it is 2.00:1. */
+.form label.is-invalid input,
+.form label.is-invalid textarea{ border-color:#b32d1f; }
+.form__consent{
+  margin:0; font-size:13.5px; color:#5b6673;   /* 5.84:1 on white */
+}
+.form__consent a{ color:var(--orange-dk); text-decoration:underline; text-underline-offset:3px; }
+.form button[disabled]{ opacity:.62; cursor:progress; transform:none; }
+.form__note--failed{ color:#b32d1f; }
+.form__note--failed a{ color:var(--orange-dk); text-decoration:underline; }
+
+/* ==========================================================================
+   MODAL — quotation received
+   A native <dialog>. The browser gives the top layer, the backdrop, the focus
+   trap and Esc; nothing here re-implements any of that, it only dresses it.
+   ========================================================================== */
+.modal{
+  border:1px solid var(--line); border-radius:var(--radius);
+  background:var(--bg-2); color:var(--txt);
+  padding:0; width:min(100% - 32px, 420px);
+  box-shadow:0 24px 60px rgba(0,0,0,.55);
+}
+.modal::backdrop{ background:rgba(3,5,8,.72); backdrop-filter:blur(2px); }
+.modal__body{ padding:clamp(24px,4vw,32px); text-align:center; }
+.modal__mark{
+  width:52px; height:52px; margin:0 auto 16px; border-radius:50%;
+  display:grid; place-items:center; font-size:26px; line-height:1;
+  color:var(--bg); background:var(--amber);
+}
+.modal__title{ margin:0 0 8px; font-size:clamp(20px,2.4vw,24px); line-height:1.25; }
+.modal__text{ margin:0 0 22px; color:var(--txt-2); font-size:15px; line-height:1.55; }
+.modal .btn{ min-width:140px; }
+
+/* The dialog animates in, but only for visitors who have not asked the system
+   to stop motion. */
+@media (prefers-reduced-motion: no-preference){
+  .modal[open]{ animation:modal-in .22s var(--ease); }
+  @keyframes modal-in{
+    from{ opacity:0; transform:translateY(8px) scale(.98); }
+    to{ opacity:1; transform:none; }
+  }
+}
+
+/* ---- legal pages (C-02 · B-06) ---- */
+.wrap--narrow{ width:min(100% - 40px, 760px); }
+/* ==========================================================================
+   LEGAL DOCUMENT
+   The privacy and terms pages. Light, and deliberately not a deck: these are
+   read top to bottom and referred back to by clause number, so the page
+   scrolls the whole way however many clauses it grows to.
+
+   It carries its own colours rather than the page tokens, the way .slide-light
+   does — the rest of the site is dark and they would all have to be inverted
+   otherwise.
+   ========================================================================== */
+.legal-doc{
+  --doc-bg:  #f7f8fa;
+  --doc-ink: #16232e;
+
+  background:var(--doc-bg); color:var(--doc-ink);
+  padding-block:calc(clamp(72px,9vw,130px) + 20px) clamp(48px,7vw,96px);
+}
+/* The trail and the date sit at the page's own gutter, outside the column the
+   clauses are set in — the comp hangs them off the top-left corner. */
+.legal-doc__head{
+  display:grid; gap:clamp(10px,1.6vh,18px);
+  margin-bottom:clamp(28px,4.5vh,60px);
+}
+.legal-doc__head .crumbs{ color:rgba(22,35,46,.72); }
+.legal-doc__head .crumbs a{ color:rgba(22,35,46,.72); }
+.legal-doc__head .crumbs a:hover{ color:var(--orange); }
+.legal-doc__head .crumbs__sep{ color:rgba(22,35,46,.5); }
+.legal-doc__updated{
+  position:relative; margin:0; padding-left:clamp(16px,1.3vw,24px);
+  color:rgba(22,35,46,.68); font-size:clamp(12.5px,1vw,15px);
+}
+.legal-doc__updated::before{
+  content:''; position:absolute; left:0; top:.5em;
+  width:clamp(7px,.55vw,9px); aspect-ratio:1;
+  background:var(--orange);
+}
+
+/* The clauses are set in a narrow column — a legal page is read, and a measure
+   this long is what makes that possible. */
+.legal-doc__title{
+  margin:0 0 clamp(26px,4.5vh,58px);
+  text-align:center; letter-spacing:-.025em; line-height:1.14;
+  font-weight:700; font-size:clamp(27px,3.4vw,54px);
+}
+.legal-doc__draft{
+  margin:0 0 clamp(26px,3.6vh,44px);
+  padding:clamp(12px,1.4vw,18px) clamp(14px,1.6vw,20px);
+  border:1px solid rgba(var(--orange-rgb),.42);
+  background:rgba(var(--orange-rgb),.08);
+  border-radius:var(--radius-sm);
+  font-size:clamp(13px,1.05vw,15px); line-height:1.55;
+}
+
+.legal-doc__clauses{
+  /* The counter lives here rather than on each list, so numbering runs
+     unbroken across the group headings — clauses get cited by number, and
+     restarting at every heading would give the page several clause 1s. */
+  counter-reset:clause;
+  display:grid; gap:clamp(30px,4.6vh,58px);
+}
+.legal-doc__group{
+  margin:0 0 clamp(16px,2.2vh,24px);
+  font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  font-size:clamp(11.5px,.88vw,13.5px);
+  color:var(--orange-dk);
+}
+.legal-doc__list{
+  list-style:none; margin:0; padding:0;
+  display:grid; gap:clamp(20px,3.2vh,38px);
+}
+.legal-doc__item{ counter-increment:clause; }
+.legal-doc__item :is(h2,h3){
+  margin:0 0 clamp(8px,1.4vh,14px);
+  display:flex; gap:.6em;
+  font-weight:700; line-height:1.3; letter-spacing:-.01em;
+  font-size:clamp(17px,1.65vw,27px);
+}
+.legal-doc__item :is(h2,h3)::before{
+  content:counter(clause) '.';
+  flex:none; font-variant-numeric:tabular-nums;
+}
+.legal-doc__item :is(p,ul){
+  margin:0; color:rgba(22,35,46,.66); line-height:1.68;
+  font-size:clamp(13.5px,1.05vw,16.5px);
+}
+.legal-doc__item ul{
+  padding-left:1.35em; display:grid; gap:.3em;
+}
+.legal-doc__item li::marker{ color:rgba(22,35,46,.42); }
+/* Hai doan lien tiep trong cung mot dieu phai cach nhau. `margin:0` o tren la
+   de doan DAU khong day tieu de ra xa; khong co luat nay thi mot dieu nhieu
+   doan dinh thanh mot khoi chu dac. Dung ke sau (`+`) chu khong dat
+   `margin-bottom` de khong cham vao khoang cach giua cac dieu. */
+.legal-doc__item :is(p,ul) + :is(p,ul){ margin-top:.8em; }
+
+.legal-doc__contact{
+  margin-top:clamp(34px,5vh,64px); padding-top:clamp(22px,3vh,34px);
+  border-top:1px solid rgba(22,35,46,.14);
+}
+.legal-doc__contact h2{
+  margin:0 0 clamp(8px,1.4vh,14px);
+  font-weight:700; font-size:clamp(16px,1.5vw,23px); letter-spacing:-.01em;
+}
+.legal-doc__contact p{
+  margin:0; color:rgba(22,35,46,.66); line-height:1.68;
+  font-size:clamp(13.5px,1.05vw,16.5px);
+}
+.legal-doc__lines{ display:grid; gap:5px; margin-top:14px !important; }
+.legal-doc__lines a{ color:var(--orange-dk); }
+.legal-doc__lines a:hover{ color:var(--orange); }
+
+/* ---- breadcrumb on section pages (B-03) ---- */
+.page__crumbs{ padding-top:calc(clamp(72px,9vw,130px) + 44px); }
+/* On a page built entirely of slides the trail rides in the hero, under its
+   rule — see WarehouseHero. */
+.page-hero__trail{ margin-top:clamp(14px,2.2vh,26px); }
+.page__crumbs + .section{ padding-top:clamp(18px,2vw,26px); }
+.crumbs__item{ display:inline-flex; align-items:center; gap:9px; }
+.crumbs__sep{ color:var(--txt-3); }
+
+/* ==========================================================================
+   BLOG — the newsroom index
+   Light, like the legal pages and for the same reason: this is a page of
+   reading rather than a deck, and the comp sets it on white. It carries its
+   own colours rather than the page tokens, the way .legal-doc does, so the
+   dark site around it needs no inverting.
+   ========================================================================== */
+.blog{
+  --doc-bg:  #fbfbfc;
+  --doc-ink: #16232e;
+  background:var(--doc-bg); color:var(--doc-ink);
+}
+/* The trail sits above the title, in the page gutter — the comp starts the
+   page on the heading, so this stays quiet. */
+.blog__head{ margin-bottom:clamp(20px,3vh,34px); }
+.blog__head .crumbs{ color:rgba(22,35,46,.55); }
+.blog__head .crumbs a{ color:rgba(22,35,46,.72); }
+.blog__head .crumbs a:hover{ color:var(--orange); }
+.blog__head .crumbs__sep{ color:rgba(22,35,46,.3); }
+
+.blog__title{
+  margin:0 0 clamp(30px,5vh,62px);
+  text-align:center; letter-spacing:-.025em; line-height:1.14;
+  font-weight:800; font-size:clamp(27px,3.4vw,50px);
+}
+
+/* Three across, as the comp sets it — and spelled out rather than left to
+   `auto-fit`, which collapses the empty tracks: a week with two articles in it
+   would otherwise stretch them to half the page each and quietly redesign the
+   card. Two up on a tablet, one on a phone. */
+.blog__grid{
+  list-style:none; margin:0; padding:0;
+  display:grid; gap:clamp(30px,4.2vh,54px) clamp(18px,2vw,28px);
+  grid-template-columns:repeat(3,minmax(0,1fr));
+}
+@media (max-width:980px){ .blog__grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:640px){ .blog__grid{ grid-template-columns:minmax(0,1fr); } }
+
+.blog-card{ min-width:0; }
+.blog-card__link{
+  display:grid; gap:clamp(10px,1.4vh,16px);
+  align-content:start; height:100%;
+}
+.blog-card__link:hover .blog-card__title{ color:var(--orange-dk); }
+.blog-card__link:focus-visible{
+  outline:2px solid var(--orange); outline-offset:6px; border-radius:4px;
+}
+
+/* The frame, not the image, holds the shape. A cover that is missing, still
+   uploading or served from an expired signature leaves this plate showing and
+   the row of cards keeps its rhythm — nothing collapses. */
+.blog-card__frame{
+  display:block; position:relative; overflow:hidden;
+  aspect-ratio:4/3; border-radius:8px;
+  background:linear-gradient(140deg,#e7eaee,#d7dce2);
+}
+.blog-card__img{
+  width:100%; height:100%; object-fit:cover;
+  transition:transform .5s var(--ease);
+}
+.blog-card__link:hover .blog-card__img{ transform:scale(1.035); }
+
+/* Two lines, as the comp sets it: a longer headline is cut rather than allowed
+   to push the excerpt out of line with its neighbours. */
+.blog-card__title{
+  margin:0; font-weight:700; letter-spacing:-.01em; line-height:1.35;
+  font-size:clamp(15px,1.25vw,18px);
+  transition:color .25s;
+  display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2;
+  overflow:hidden;
+}
+.blog-card__excerpt{
+  margin:0; color:rgba(22,35,46,.62); line-height:1.62;
+  font-size:clamp(12.5px,.95vw,14px);
+  display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:5;
+  overflow:hidden;
+}
+
+/* Nothing published yet. Centred in the space the grid would have filled, so
+   the page still looks composed rather than cut short. */
+.blog__empty{
+  text-align:center; max-width:520px; margin-inline:auto;
+  padding:clamp(34px,6vh,70px) 0;
+}
+.blog__empty-title{
+  margin:0 0 10px; font-weight:700; letter-spacing:-.01em;
+  font-size:clamp(17px,1.6vw,22px);
+}
+.blog__empty-body{
+  margin:0; color:rgba(22,35,46,.6); line-height:1.65;
+  font-size:clamp(13.5px,1.05vw,15.5px);
+}
+
+/* ==========================================================================
+   ARTICLE — one newsroom piece
+   Opens on the same hero the service pages use, then a single dark column of
+   prose. Not a deck: an article is read straight through, so the page scrolls
+   normally however long the piece runs.
+   ========================================================================== */
+.page-article{ background:var(--ground); }
+/* next/image with `fill` positions itself; a plain <img> does not, and the
+   cover is a plain <img> for the reasons set out in components/sections/blog.tsx. */
+.article-hero__img{
+  position:absolute; inset:0; width:100%; height:100%;
+}
+.article__date{
+  margin:0; color:#9aa5b4; font-size:clamp(12.5px,1vw,14.5px);
+}
+.article__date time{ color:#c9cfd8; }
+
+/* The hero's own bottom padding already puts air under the trail, so the
+   section's full section rhythm on top of it opens a hole the length of a
+   screen before the first line of the piece. */
+.article{
+  background:var(--ground); color:#fff;
+  padding-top:clamp(34px,4.5vh,66px);
+}
+
+/* The body is author-written HTML out of the admin editor, so every element it
+   can emit is styled here rather than in the component — the markup is not
+   ours to add class names to. */
+.article__body{ font-size:clamp(14.5px,1.1vw,17px); line-height:1.75; color:#d5dae1; }
+.article__body > :first-child{ margin-top:0; }
+.article__body > :last-child{ margin-bottom:0; }
+.article__body p{ margin:0 0 1.15em; }
+.article__body h2,
+.article__body h3,
+.article__body h4{
+  margin:1.9em 0 .6em; color:#fff;
+  font-weight:700; letter-spacing:-.015em; line-height:1.25;
+}
+.article__body h2{ font-size:clamp(19px,1.9vw,29px); }
+.article__body h3{ font-size:clamp(17px,1.5vw,23px); }
+.article__body h4{ font-size:clamp(15.5px,1.25vw,19px); }
+.article__body ul,
+.article__body ol{ margin:0 0 1.15em; padding-left:1.35em; }
+.article__body li{ margin-bottom:.4em; }
+.article__body a{ color:var(--orange-2); text-decoration:underline; text-underline-offset:3px; }
+.article__body a:hover{ color:var(--amber); }
+.article__body strong{ color:#fff; }
+.article__body blockquote{
+  margin:1.6em 0; padding:.2em 0 .2em 1.1em;
+  border-left:3px solid var(--orange); color:#e4e9ef; font-style:italic;
+}
+.article__body code{
+  background:rgba(255,255,255,.08); border-radius:4px;
+  padding:.12em .4em; font-size:.92em;
+}
+.article__body pre{
+  margin:1.4em 0; padding:16px 18px; overflow-x:auto;
+  background:rgba(0,0,0,.35); border:1px solid var(--line); border-radius:var(--radius-sm);
+}
+.article__body pre code{ background:none; padding:0; }
+/* An editor-inserted image has no dimensions on it, so give it a ceiling and
+   let it keep its own ratio rather than stretching the column. */
+.article__body img{
+  margin:1.6em auto; max-width:100%; height:auto;
+  border-radius:var(--radius-sm);
+}
+.article__body hr{ margin:2em 0; border:0; border-top:1px solid var(--line); }
+.article__body table{ width:100%; border-collapse:collapse; margin:1.5em 0; }
+.article__body th,
+.article__body td{
+  padding:9px 12px; border:1px solid var(--line); text-align:left;
+}
+
+.article__back{
+  margin:clamp(36px,5vh,64px) 0 0; padding-top:clamp(20px,3vh,32px);
+  border-top:1px solid var(--line);
+}
+.article__back a{
+  display:inline-flex; align-items:center; gap:9px;
+  color:var(--orange-2); font-weight:600; font-size:15px;
+  transition:color .25s, gap .25s var(--ease);
+}
+.article__back a:hover{ color:var(--amber); gap:13px; }
+.article__back svg{
+  width:19px; height:19px; fill:none;
+  stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;
+}
+
+/* ==========================================================================
+   CHẾ ĐỘ SỬA TẠI CHỖ (màn CMS)
+   --------------------------------------------------------------------------
+   Dấu [data-cms-edit] do CmsEditor đặt lên <html>, chỉ khi trang nằm trong
+   khung xem trước của màn CMS. Khách thật không bao giờ thấy khối này.
+
+   Việc của nó: làm trang ĐỨNG YÊN. Landing được dựng để chữ trôi, mờ, chồng
+   lên nhau theo lúc cuộn — đẹp khi xem, nhưng đang gõ mà chữ tự nhảy đi thì
+   không sửa nổi. Ở đây mọi thứ nằm im, đủ sáng, và bấm được.
+   ========================================================================== */
+
+/* Cuộn từng màn một là để xem, không phải để sửa. */
+html[data-cms-edit]:has(.home-slides),
+html[data-cms-edit]:has(.page-slides){ scroll-snap-type:none; }
+html[data-cms-edit] .home-slides > *,
+html[data-cms-edit] .page-slides > *{ scroll-snap-align:none; scroll-snap-stop:normal; }
+
+/* ---- Hero: bỏ dính, trải năm khung chữ ra theo chiều dọc ----
+   Bình thường cả năm khung nằm chồng lên nhau ở cùng một ô lưới, và một vòng
+   lặp mỗi khung hình quyết định khung nào hiện. Vòng lặp đó đã tắt ở Hero.tsx,
+   nên nếu không có mấy dòng dưới thì cả năm sẽ đè lên nhau, mờ và không bấm
+   được. Trải dọc ra thì sửa được từng khung một, thấy rõ khung nào là khung
+   nào. */
+html[data-cms-edit] .hero{ height:auto; }
+html[data-cms-edit] .hero__sticky{ position:static; height:auto; overflow:visible; padding:96px 0 48px; }
+/* Ảnh chờ (#heroPoster) chép lại y nguyên chữ của khung 1. Để nguyên thì mỗi
+   câu có hai ô sửa, và ô kia còn nằm đè lên. Ảnh nền hero vẫn thay được ở ngăn
+   hình ảnh, nên ở đây giấu đi cho gọn. */
+html[data-cms-edit] .hero__stage,
+html[data-cms-edit] .poster,
+html[data-cms-edit] .hero__hint{ display:none; }
+html[data-cms-edit] .hero__overlays{
+  position:static; display:block; pointer-events:auto;
+  padding:0 clamp(20px,5vw,60px);
+}
+html[data-cms-edit] .cap{
+  opacity:1 !important;
+  transform:none !important;
+  filter:none !important;
+  will-change:auto;
+  max-width:none;
+  padding:36px 0;
+  border-top:1px dashed rgba(255,255,255,.14);
+}
+html[data-cms-edit] .cap:first-child{ border-top:0; }
+/* Số thứ tự khung, để đối chiếu với "Khung chữ 1..5" trong danh sách ô. */
+html[data-cms-edit] .cap{ counter-increment:cms-cap; position:relative; }
+html[data-cms-edit] .hero__overlays{ counter-reset:cms-cap; }
+html[data-cms-edit] .cap::before{
+  content:"Khung chữ " counter(cms-cap);
+  position:absolute; top:10px; left:0;
+  font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:rgba(255,255,255,.4);
+}
+/* Chữ hero to bằng cả màn hình thì trải dọc ra là dài lê thê. */
+html[data-cms-edit] .cap__title{ font-size:clamp(26px,3.4vw,44px); }
+html[data-cms-edit] .cap__sub{ font-size:15px; }
+/* Mốc chương của hero là chữ sửa được, nên phải bấm tới. */
+html[data-cms-edit] .hero__hud{ position:static; margin-top:28px; pointer-events:auto; }
+
+/* ---- Thẻ dịch vụ: đứng yên khi đang sửa ----
+   Thẻ không còn lật, nên cả ảnh lẫn chữ đều nằm trên một mặt và bấm được.
+   Chỉ cần tắt hiệu ứng nổi lên: thẻ phóng to đúng lúc người sửa bấm vào thì
+   chỗ bấm dịch đi. ServiceRail cũng không chạy ở chế độ sửa. */
+html[data-cms-edit] .svc-card__inner,
+html[data-cms-edit] .svc-face__img{ transform:none !important; transition:none; }
+html[data-cms-edit] .svc-card__inner::before,
+html[data-cms-edit] .svc-card__inner::after{ opacity:0 !important; }
+html[data-cms-edit] .svc-card__inner{ opacity:1 !important; }
+/* the scope points are content to edit: always open */
+html[data-cms-edit] .svc-face__more{ opacity:1; }
+html[data-cms-edit] .svc-face__panel::before{ opacity:1; }
+
+/* ---- Quy trình: các bước bày hết ra, không chạy hiệu ứng ----
+   Khối này bình thường giữ một bước giữa màn hình và lăn chuột để bước tới.
+   Ở chế độ sửa nó dựng cả danh sách (xem ProcessSlide), nên phần còn lại chỉ
+   là xếp cho dễ đọc và tắt hiệu ứng trôi vào — hiệu ứng đó chạy lại mỗi lần
+   thẻ đổi, và chữ đang trôi thì gõ vào rất khó trúng. */
+html[data-cms-edit] .service-process{ padding-block:clamp(48px,7vh,90px); }
+html[data-cms-edit] .service-process__step--all{
+  display:grid; gap:clamp(20px,3vh,36px);
+  width:min(100% - 40px, var(--wrap)); margin-inline:auto;
+}
+html[data-cms-edit] .service-process__one{
+  display:grid; gap:8px;
+  padding-top:clamp(16px,2vh,24px);
+  border-top:1px solid rgba(22,35,46,.12);
+}
+html[data-cms-edit] .service-process__one:first-child{ border-top:0; }
+html[data-cms-edit] .service-process__no{
+  margin:0; justify-self:center;
+  font-size:11px; font-weight:700; letter-spacing:.16em;
+  color:rgba(22,35,46,.38);
+}
+/* Chữ bước to bằng nửa màn hình khi chỉ có một bước; bày cả danh sách thì phải
+   nhỏ lại, không thì cuộn mãi không hết. */
+html[data-cms-edit] .service-process__name{ font-size:clamp(18px,1.8vw,26px); max-width:none; }
+html[data-cms-edit] .service-process__body{ font-size:15px; }
+html[data-cms-edit] .service-process__name,
+html[data-cms-edit] .service-process__body{ animation:none; }
+/* Vạch giữ lại — chiếc xe trên đó là một ô ảnh thay được. Nhưng neo nó về
+   đầu vạch và bỏ hiệu ứng trượt: xe đang chạy thì bấm không trúng. Nhận chuột
+   trở lại, vì lớp bọc vốn tắt chuột cho cả cụm. */
+html[data-cms-edit] .service-process__truck{
+  transform:none !important;
+  transition:none;
+  pointer-events:auto;
+}
+html[data-cms-edit] .service-process__truck span{ width:clamp(64px,8vw,120px); }
+html[data-cms-edit] .service-process__dots{ display:none; }
+
+/* ---- Kho bãi: bày cả ba loại kho ----
+   Lưới ở đây là ba cột (giới thiệu | chấm | thẻ). Dựng ba thẻ thì chúng thành
+   cột thứ 3, 4, 5 và tràn ra ngoài màn — nên xếp lại thành một cột. Ba chấm
+   chỉ có nghĩa khi mỗi lần xem một loại. */
+html[data-cms-edit] .warehouse-types__grid{ grid-template-columns:minmax(0,1fr); }
+html[data-cms-edit] .warehouse-types__dots{ display:none; }
+html[data-cms-edit] .warehouse-types__heading{ max-width:none; }
+html[data-cms-edit] .warehouse-types__figure{ max-height:none; aspect-ratio:16/9; }
+
+/* ---- Mạng xã hội: chế độ sửa hiện cả những kênh chưa có địa chỉ ----
+   Kênh chưa điền vẽ mờ và nét đứt, để phân biệt ngay với kênh đã có. Bấm vào
+   là mở hộp điền địa chỉ — xem dungLaiMangXaHoi ở components/CmsEditor. */
+html[data-cms-edit] .social[hidden]{ display:flex; }
+html[data-cms-edit] .social a[data-cms-trong]{
+  opacity:.45;
+  border-style:dashed;
+  cursor:pointer;
+}
+html[data-cms-edit] .social a[data-cms-trong]:hover{ opacity:.9; }
+
+/* Dải chữ chạy: đứng lại mới bấm trúng. */
+html[data-cms-edit] .marquee__track,
+html[data-cms-edit] .logo-row__track{ animation:none; }
+
+/* ---- Liên kết không nhận chuột khi đang sửa ----
+   Thẻ dịch vụ có một <a> RỖNG phủ kín cả thẻ (.svc-card__link — cả thẻ là
+   một link). Hậu quả ở chế độ sửa: mọi
+   cú bấm đều rơi vào cái link đó, không bao giờ chạm tới tấm ảnh hay dòng chữ
+   bên dưới — bấm ảnh để thay thì lại nhảy sang trang dịch vụ.
+
+   Tắt chuột cho mọi liên kết là cách chắc chắn nhất, và tiện thể bỏ luôn việc
+   lỡ tay bấm trúng link rồi lạc sang trang khác giữa chừng. Đổi trang thì dùng
+   danh sách mục bên trái màn CMS.
+
+   Ba loại phần tử được bật lại, vì chúng LÀ thứ cần bấm. */
+html[data-cms-edit] a{ pointer-events:none; }
+html[data-cms-edit] [data-cms-key],
+html[data-cms-edit] [data-cms-slot],
+html[data-cms-edit] [data-cms-attr]{ pointer-events:auto; }
+
+/* ---- Hàng biểu tượng mạng xã hội ở chân trang ---- */
+.social{
+  list-style:none; margin:18px 0 0; padding:0;
+  display:flex; flex-wrap:wrap; gap:10px;
+}
+/* `display:flex` ở trên thắng `hidden` của HTML, nên phải nói lại cho rõ. */
+.social[hidden]{ display:none; }
+.social a{
+  display:grid; place-items:center;
+  width:36px; height:36px; border-radius:50%;
+  border:1px solid rgba(255,255,255,.16);
+  color:rgba(255,255,255,.72);
+  transition:color .2s var(--ease), border-color .2s var(--ease), background-color .2s var(--ease);
+}
+.social svg{ width:18px; height:18px; fill:currentColor; }
+.social a:hover{
+  color:#fff;
+  border-color:rgba(var(--orange-rgb),.7);
+  background:rgba(var(--orange-rgb),.14);
+}
+.social a:focus-visible{ outline:2px solid var(--orange); outline-offset:2px; }
+
+/* ==========================================================================
+   Trang ký điện tử — khách mở từ đường dẫn trong email
+   ========================================================================== */
+
+/* Nền sáng chứ không theo nền tối của trang giới thiệu: đây là một tờ giấy để
+   đọc kỹ rồi ký, không phải một trang để lướt. */
+.sign{ background:#fff; color:#111827; min-height:100vh; padding:40px 0 64px; }
+.sign__wrap{ max-width:720px; }
+.sign__title{ margin:0 0 8px; font-size:clamp(24px,3vw,32px); font-weight:800; }
+.sign__lead{ margin:0 0 24px; color:#4b5563; }
+.sign__h2{ margin:28px 0 10px; font-size:17px; font-weight:700; }
+
+.sign__meta{ display:grid; grid-template-columns:auto 1fr; gap:6px 16px; margin:0 0 20px; }
+.sign__meta dt{ color:#6b7280; font-size:14px; }
+.sign__meta dd{ margin:0; font-weight:600; }
+
+.sign__pdf{
+  width:100%; height:60vh; min-height:360px;
+  border:1px solid #e5e7eb; border-radius:10px; background:#f9fafb;
+}
+
+.sign__terms{
+  white-space:pre-wrap; font-size:14px; line-height:1.65; color:#374151;
+  border:1px solid #e5e7eb; border-radius:10px; padding:14px 16px;
+  max-height:220px; overflow:auto;
+}
+
+.sign__box{ margin-top:28px; border:1px solid #e5e7eb; border-radius:12px; padding:20px; }
+.sign__label{ display:block; margin:14px 0 6px; font-size:14px; font-weight:600; }
+.sign__input{
+  width:100%; border:1px solid #d1d5db; border-radius:8px;
+  padding:10px 12px; font-size:15px; font-family:inherit; color:inherit;
+}
+.sign__input:focus{ outline:2px solid var(--orange-2); outline-offset:1px; }
+.sign__area{ resize:vertical; }
+
+/* `touch-action:none` là bắt buộc: thiếu nó thì kéo ngón tay trên khung ký bị
+   trình duyệt hiểu là cuộn trang, và không vẽ được nét nào trên điện thoại. */
+.sign__pad{
+  width:100%; height:180px; touch-action:none; cursor:crosshair;
+  border:1px dashed #9ca3af; border-radius:10px; background:#fff;
+}
+
+.sign__check{ display:flex; gap:10px; align-items:flex-start; margin:16px 0 4px; font-size:14px; }
+.sign__check input{ margin-top:3px; width:17px; height:17px; flex:none; }
+
+.sign__row{ display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-top:18px; }
+.sign__btn{
+  background:var(--orange-2); color:#fff; border:none; border-radius:999px;
+  padding:11px 22px; font-size:15px; font-weight:700; cursor:pointer;
+}
+.sign__btn:disabled{ opacity:.6; cursor:default; }
+.sign__link{
+  background:none; border:none; padding:0; cursor:pointer;
+  color:var(--orange-2); font-size:14px; font-weight:600; text-decoration:underline;
+}
+.sign__hint{ margin:14px 0 0; font-size:14px; color:#4b5563; }
+.sign__err{ margin:14px 0 0; font-size:14px; color:#b91c1c; font-weight:600; }
+.sign__legal{ margin:18px 0 0; font-size:12px; color:#6b7280; }
+.sign__done{ margin-top:28px; border:1px solid #e5e7eb; border-radius:12px; padding:28px 20px; text-align:center; }
+.sign__done h2{ margin:0 0 8px; font-size:20px; }
+.sign__done p{ margin:0; color:#4b5563; }
+
+@media (max-width:600px){
+  .sign__pdf{ height:46vh; }
+  .sign__meta{ grid-template-columns:1fr; gap:2px 0; }
+  .sign__meta dd{ margin-bottom:10px; }
+}
+
+
+/* ==========================================================================
+   SERVICE PAGE — PHẠM VI + CÂU HỎI THƯỜNG GẶP (feedback 15/10/2026)
+   Hai khối từng là danh sách trơn trên nền tối, trống trải giữa màn hình.
+   Giờ là lưới thẻ và hai cột có thẻ liên hệ, cùng ngôn ngữ với các slide tối.
+   ========================================================================== */
+.service-scope .page-slide__title,
+.service-faq .page-slide__title{ color:#fff; }
+/* Đúng màu nền của ảnh xe (11,13,14), để mép ảnh không thành một khung
+   sáng hơn nền xung quanh. */
+.page-slides > .service-scope,
+.service-scope{ background:#0b0d0e; }
+.service-scope__grid{
+  display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:clamp(24px,4vw,64px); align-items:center;
+}
+.scope-list{ margin:0; border-top:0; }
+.scope-list__row{
+  display:grid; grid-template-columns:minmax(120px,.42fr) minmax(0,1fr);
+  gap:clamp(14px,2vw,28px); align-items:start;
+  padding:clamp(11px,1.7vh,20px) 0;
+  border-bottom:1px solid rgba(255,255,255,.16);
+}
+/* Dòng cuối không kẻ dưới (16/10/2026). */
+.scope-list__row:last-child{ border-bottom:0; }
+.scope-list__row dt{
+  margin:0; padding-top:3px;
+  color:var(--orange); text-transform:uppercase;
+  font-size:12.5px; font-weight:600; letter-spacing:.06em; line-height:1.45;
+}
+.scope-list__row dd{
+  margin:0; color:#e4e9ef; line-height:1.55;
+  font-size:clamp(15px,1.25vw,19px);
+}
+/* Tràn ra mép phải màn hình như Figma: khung ảnh vượt khỏi .wrap đúng bằng
+   lề phải của nó. */
+.service-scope__figure{
+  position:relative; align-self:stretch;
+  min-height:clamp(280px,42vw,620px);
+  margin-right:calc((100vw - min(100vw - 40px, var(--wrap))) / -2);
+}
+.service-scope__img{ object-fit:contain; object-position:right center; }
+.faq-item__no{
+  flex:none; display:grid; place-items:center;
+  width:40px; height:40px; border-radius:10px;
+  background:rgba(242,106,27,.12); border:1px solid rgba(242,106,27,.35);
+  color:var(--orange); font-weight:700; font-size:13px; letter-spacing:.04em;
+}
+
+.service-faq__grid{
+  display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.5fr);
+  gap:clamp(28px,5vw,80px); align-items:start;
+}
+.service-faq__aside .page-slide__title{ margin-bottom:12px; }
+.service-faq__lead{ margin:0 0 clamp(20px,3vh,32px); color:#aab2bd; line-height:1.6; }
+.faq-cta{
+  display:grid; gap:12px; justify-items:start;
+  padding:clamp(20px,2vw,28px);
+  border:1px solid rgba(255,255,255,.1); border-radius:14px;
+  background:rgba(255,255,255,.03);
+}
+.faq-cta p{ margin:0; }
+.faq-cta__title{ color:#fff; font-weight:700; font-size:clamp(16px,1.3vw,19px); }
+.faq-cta__body{ color:#aab2bd; line-height:1.55; font-size:14.5px; }
+.faq-cta__phone{ color:#c9cfd8; font-size:13.5px; letter-spacing:.02em; text-decoration:none; }
+.faq-cta__phone:hover{ color:#fff; }
+
+/* Chỉ kẻ GIỮA các câu, không kẻ mép trên/dưới cả danh sách (16/10/2026). */
+.faq-item + .faq-item{ border-top:1px solid rgba(255,255,255,.12); }
+.faq-item summary{
+  list-style:none; cursor:pointer;
+  display:flex; align-items:center; gap:16px;
+  padding:clamp(16px,2.2vh,22px) 0;
+}
+.faq-item summary::-webkit-details-marker{ display:none; }
+.faq-item__q{ flex:1; color:#fff; font-weight:600; line-height:1.4; font-size:clamp(15px,1.25vw,19px); }
+.faq-item__toggle{
+  flex:none; position:relative; width:32px; height:32px; border-radius:50%;
+  border:1px solid rgba(255,255,255,.25); transition:border-color .3s var(--ease);
+}
+.faq-item__toggle::before,
+.faq-item__toggle::after{
+  content:''; position:absolute; left:50%; top:50%; width:12px; height:1.5px;
+  background:#fff; transform:translate(-50%,-50%); transition:transform .3s var(--ease);
+}
+.faq-item__toggle::after{ transform:translate(-50%,-50%) rotate(90deg); }
+.faq-item[open] .faq-item__toggle{ border-color:var(--orange); }
+.faq-item[open] .faq-item__toggle::before,
+.faq-item[open] .faq-item__toggle::after{ background:var(--orange); }
+.faq-item[open] .faq-item__toggle::after{ transform:translate(-50%,-50%) rotate(0deg); }
+.faq-item summary:hover .faq-item__q{ color:var(--orange); }
+.faq-item__a{
+  margin:0; padding:0 48px clamp(18px,2.4vh,24px) 56px;
+  color:#aab2bd; line-height:1.65; font-size:clamp(14px,1.05vw,16px);
+}
+@media (max-width:860px){
+  .service-scope__grid{ grid-template-columns:1fr; }
+  .service-scope__figure{ min-height:clamp(220px,60vw,420px); }
+  .scope-list__row{ grid-template-columns:1fr; gap:6px; }
+  .service-faq__grid{ grid-template-columns:1fr; }
+  .faq-item__a{ padding:0 0 18px 56px; }
+}
+
+/* Điện thoại: con đường nằm ở đáy slide, đúng chỗ thanh gọi (54px, xem
+   .callbar) đè lên — trước đây nó bị che hoàn toàn. Đẩy lên trên thanh đó. */
+@media (max-width:860px){
+  .service-process__track{
+    padding-bottom:calc(54px + env(safe-area-inset-bottom) + clamp(16px,2.6vh,34px));
+  }
+}
+
+/* ==========================================================================
+   TẢI ỨNG DỤNG + CÂU HỎI THƯỜNG GẶP — trang chủ, dưới dải đối tác (19/10/2026)
+   ========================================================================== */
+.app-dl{
+  --light-bg:#fff6f1;
+  background:linear-gradient(180deg,#fffaf7 0%,#ffe3d3 55%,#ffb48a 100%);
+  padding-bottom:0; align-items:end;
+}
+.app-dl__inner{
+  display:grid; grid-template-columns:minmax(0,1fr) minmax(0,460px);
+  gap:clamp(28px,5vw,80px); align-items:center;
+}
+.app-dl__title{
+  margin:0; color:var(--light-ink); font-weight:700; letter-spacing:-.01em;
+  font-size:clamp(36px,4.6vw,64px); line-height:1.1;
+}
+.app-dl__lead{ margin:14px 0 clamp(28px,5vh,48px); color:#3a4652; font-size:clamp(16px,1.4vw,20px); }
+.app-dl__get{ display:flex; gap:clamp(18px,2.4vw,32px); align-items:center; flex-wrap:wrap; }
+.app-dl__qr{ width:clamp(160px,17vw,256px); height:auto; background:#fff; padding:clamp(12px,1.2vw,16px); box-sizing:border-box; }
+.app-dl__qr svg{ display:block; width:100%; height:auto; }
+/* Chiếc dù trang trí giữa hai cột, như thiết kế. */
+.app-dl__chute{
+  position:absolute; z-index:1; pointer-events:none;
+  left:42%; top:clamp(84px,9vh,110px); width:clamp(64px,7vw,100px); height:auto;
+}
+.app-dl__stores{ display:grid; gap:14px; justify-items:start; }
+.app-dl__available{
+  margin:0; display:flex; align-items:center; gap:8px; font-size:14px; color:#3a4652;
+}
+.app-dl__available::before{
+  content:''; width:7px; height:7px; border-radius:50%; background:var(--orange);
+}
+.app-dl__store{
+  display:inline-flex; align-items:center; gap:10px; min-width:166px;
+  padding:8px 16px; border-radius:9px; background:#0b0b0b; color:#fff;
+  border:1px solid #a6a6a6; text-decoration:none; transition:transform .2s var(--ease);
+}
+.app-dl__store:hover{ transform:translateY(-2px); }
+.app-dl__store[aria-disabled]{ cursor:default; }
+.app-dl__store[aria-disabled]:hover{ transform:none; }
+.app-dl__store span{ display:grid; font-size:20px; font-weight:600; line-height:1.05; }
+.app-dl__store small{ font-size:10.5px; font-weight:500; letter-spacing:.02em; }
+/* Điện thoại đứng sát mép dưới khối, bị cắt như thiết kế. */
+.app-dl__phone{ display:block; width:100%; height:auto; align-self:end; }
+
+.home-faq{ --light-bg:#f8f9fb; }
+.app-dl::before,
+.home-faq::before{ display:none; }
+.home-faq__title{
+  margin:0 0 clamp(32px,6vh,64px); text-align:center; color:var(--light-ink);
+  font-weight:700; letter-spacing:-.01em; font-size:clamp(32px,4vw,56px); line-height:1.15;
+}
+.home-faq__list{ display:grid; gap:20px; }
+.home-faq__item{ background:#fff; border:1px solid #e4e7ec; border-radius:6px; }
+.home-faq__item summary{
+  list-style:none; cursor:pointer; display:flex; align-items:center; gap:16px;
+  padding:clamp(20px,3vh,32px) 32px;
+}
+.home-faq__item summary::-webkit-details-marker{ display:none; }
+.home-faq__q{ flex:1; color:var(--light-ink); font-size:clamp(16px,1.5vw,22px); line-height:1.4; }
+.home-faq__item summary:hover .home-faq__q{ color:var(--orange); }
+.home-faq__toggle{ flex:none; position:relative; width:22px; height:22px; }
+.home-faq__toggle::before,
+.home-faq__toggle::after{
+  content:''; position:absolute; left:50%; top:50%; width:20px; height:2px;
+  background:var(--light-ink); transform:translate(-50%,-50%); transition:transform .3s var(--ease);
+}
+.home-faq__toggle::after{ transform:translate(-50%,-50%) rotate(90deg); }
+.home-faq__item[open] .home-faq__toggle::after{ transform:translate(-50%,-50%) rotate(0deg); }
+.home-faq__a{ margin:0; padding:0 32px clamp(20px,3vh,28px); color:#4a5663; line-height:1.65; font-size:clamp(15px,1.15vw,17px); }
+
+@media (max-width:860px){
+  .app-dl__inner{ grid-template-columns:1fr; }
+  .app-dl__phone{ max-width:360px; margin:0 auto; }
+  .app-dl__chute{ display:none; }
+  .home-faq__item summary{ padding:18px 20px; }
+  .home-faq__a{ padding:0 20px 18px; }
+}
